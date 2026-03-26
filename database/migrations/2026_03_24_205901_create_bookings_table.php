@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('payment_ref')->nullable();
             $table->integer('amount_paid')->nullable();
             $table->timestamps();
+            $table->unique(['user_id', 'session_id']);
         });
     }
 

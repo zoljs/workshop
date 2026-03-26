@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card, CardContent } from '@/Components/ui/card';
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps<{
@@ -39,8 +39,8 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
 </script>
 
 <template>
-    <div
-        class="group flex flex-col overflow-hidden rounded-2xl bg-white transition-all duration-300 hover:-translate-y-3"
+    <Card
+        class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-3"
     >
         <!-- Image -->
         <div class="relative h-48 overflow-hidden">
@@ -49,30 +49,10 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
                 :alt="workshop.name"
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
-
-            <!-- Availability badge -->
-            <div class="absolute right-3 top-3">
-                <Badge
-                    v-if="workshop.sessions.length === 0"
-                    variant="destructive"
-                >
-                    Nincs szabad időpont
-                </Badge>
-                <Badge
-                    v-else-if="
-                        workshop.sessions[0] &&
-                        spotsLeft(workshop.sessions[0]) <= 3
-                    "
-                    class="bg-amber-500 text-white"
-                >
-                    {{ spotsLeft(workshop.sessions[0]) }} hely maradt
-                </Badge>
-                <Badge v-else class="bg-green-600 text-white"> Elérhető </Badge>
-            </div>
         </div>
 
         <!-- Content -->
-        <div class="flex flex-grow flex-col gap-3 p-5">
+        <CardContent class="flex flex-grow flex-col gap-3 p-8">
             <!-- Name -->
             <h2 class="text-lg font-bold leading-tight text-gray-900">
                 {{ workshop.name }}
@@ -151,7 +131,7 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
             <div
                 class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4"
             >
-                <span class="text-lg font-bold text-gray-900">
+                <span class="text-2xl font-bold text-primary">
                     {{ workshop.price_per_person.toLocaleString('hu-HU') }} Ft
                 </span>
                 <Button as-child size="lg">
@@ -160,6 +140,6 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
                     >
                 </Button>
             </div>
-        </div>
-    </div>
+        </CardContent>
+    </Card>
 </template>

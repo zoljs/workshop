@@ -18,6 +18,13 @@
             'amount_paid',
         ];
 
+        protected $casts = [
+            'headcount' => 'integer',
+            'amount_paid' => 'integer',
+            'session_id' => 'integer',
+            'user_id' => 'integer',
+        ];
+
         public function user(): BelongsTo
         {
             return $this->belongsTo(User::class);
@@ -27,4 +34,5 @@
         {
             return $this->belongsTo(WorkshopSession::class, 'session_id');
         }
+
     }

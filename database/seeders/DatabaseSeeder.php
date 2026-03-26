@@ -38,8 +38,8 @@
 
             $testUser = User::create([
                 'name'     => 'Teszt Felhasználó',
-                'email'    => 'user@workshop.hu',
-                'password' => bcrypt('password'),
+                'email'    => 'user@a.a',
+                'password' => bcrypt('a'),
             ]);
             $testUser->assignRole('user');
 
@@ -90,20 +90,6 @@
                         'workshop_id'  => $workshop->id,
                         'starts_at'    => $date,
                         'max_capacity' => 10,
-                    ]);
-
-                    Booking::create([
-                        'user_id'     => $testUser->id,
-                        'session_id'  => $session->id,
-                        'headcount'   => 2,
-                        'amount_paid' => $workshop->price_per_person * 2,
-                    ]);
-
-                    Booking::create([
-                        'user_id'     => $extraUser->id,
-                        'session_id'  => $session->id,
-                        'headcount'   => 1,
-                        'amount_paid' => $workshop->price_per_person,
                     ]);
                 }
             }

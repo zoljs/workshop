@@ -3,7 +3,7 @@ import { Button } from '@/Components/ui/button';
 import { Separator } from '@/Components/ui/separator';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { Check, TicketPlus } from 'lucide-vue-next';
+import { ArrowLeft, Check, TicketPlus } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
@@ -79,14 +79,25 @@ const imageUrl3 = `https://picsum.photos/seed/${props.workshop.id + 20}/400/300`
             <div
                 class="mx-auto max-w-7xl px-4 pb-40 pt-20 sm:px-6 md:pt-32 lg:px-8"
             >
-                <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_0.5fr]">
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.5fr]">
                     <!-- Left column -->
-                    <div>
+                    <section>
+                        <Button
+                            as-child
+                            variant="ghost"
+                            size="lg"
+                            class="mb-8 w-24"
+                        >
+                            <Link :href="`/`">
+                                <ArrowLeft />
+                                Vissza
+                            </Link>
+                        </Button>
                         <!-- Header -->
                         <div class="mb-8 max-w-[80%]">
                             <div>
                                 <h1
-                                    class="text-4xl font-bold leading-tight text-foreground md:text-7xl"
+                                    class="text-4xl font-bold leading-tight text-primary md:text-6xl"
                                 >
                                     {{ workshop.name }}
                                 </h1>
@@ -347,7 +358,7 @@ const imageUrl3 = `https://picsum.photos/seed/${props.workshop.id + 20}/400/300`
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
 
                     <!-- Right column: booking widget -->
                     <div
