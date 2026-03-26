@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardHeader } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
@@ -52,8 +53,8 @@ function submit() {
 
     <AppLayout>
         <div class="min-h-screen bg-background">
-            <div class="mx-auto max-w-lg px-6 pb-24 pt-32">
-                <Button as-child variant="ghost" size="lg" class="mb-8 w-24">
+            <div class="mx-auto flex max-w-lg flex-col gap-8 px-6 pb-24 pt-32">
+                <Button as-child variant="ghost" size="lg" class="w-24">
                     <Link :href="`/workshops/${session.workshop.id}`">
                         <ArrowLeft />
                         Vissza
@@ -61,52 +62,57 @@ function submit() {
                 </Button>
 
                 <!-- Summary card -->
-                <div class="mb-4 rounded-2xl border border-border bg-card p-6">
-                    <Badge
-                        variant="outline"
-                        class="mb-3 text-xs uppercase tracking-widest"
-                    >
-                        {{ session.workshop.duration_minutes }} perc
-                    </Badge>
-                    <h1 class="mb-4 text-2xl font-bold text-foreground">
-                        {{ session.workshop.name }}
-                    </h1>
-                    <div class="space-y-2 text-sm text-muted-foreground">
-                        <div class="flex justify-between">
-                            <span>Időpont</span>
-                            <span class="font-medium text-foreground">{{
-                                formatDate(session.starts_at)
-                            }}</span>
+                <Card>
+                    <CardHeader class="flex flex-row justify-between">
+                        <h1 class="mb-4 text-2xl font-bold text-foreground">
+                            {{ session.workshop.name }}
+                        </h1>
+
+                        <Badge
+                            variant="default"
+                            class="mb-3 text-xs uppercase tracking-widest"
+                        >
+                            {{ session.workshop.duration_minutes }} perc
+                        </Badge>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="space-y-2 text-sm text-muted-foreground">
+                            <div class="flex justify-between">
+                                <span>Időpont</span>
+                                <span class="font-medium text-foreground">{{
+                                    formatDate(session.starts_at)
+                                }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Szabad helyek</span>
+                                <span class="font-medium text-foreground">{{
+                                    session.spots_left
+                                }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Ár / fő</span>
+                                <span class="font-medium text-foreground">
+                                    {{
+                                        session.workshop.price_per_person.toLocaleString(
+                                            'hu-HU',
+                                        )
+                                    }}
+                                    Ft
+                                </span>
+                            </div>
                         </div>
-                        <div class="flex justify-between">
-                            <span>Szabad helyek</span>
-                            <span class="font-medium text-foreground">{{
-                                session.spots_left
-                            }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Ár / fő</span>
-                            <span class="font-medium text-foreground">
-                                {{
-                                    session.workshop.price_per_person.toLocaleString(
-                                        'hu-HU',
-                                    )
-                                }}
-                                Ft
-                            </span>
-                        </div>
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
 
                 <!-- Booking form -->
-                <div class="rounded-2xl border border-border bg-card p-6">
-                    <form @submit.prevent="submit" class="space-y-6">
-                        <div>
-                            <p
-                                class="mb-3 text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                            >
-                                Hány főre foglalsz?
-                            </p>
+                <Card>
+                    <CardHeader>
+                        <p class="text-lg font-semibold text-muted-foreground">
+                            Hány főre foglalsz?
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        <form @submit.prevent="submit" class="space-y-6">
                             <div class="flex items-center gap-4">
                                 <Button
                                     type="button"
@@ -140,37 +146,39 @@ function submit() {
                             >
                                 {{ form.errors.headcount }}
                             </p>
-                        </div>
 
-                        <Separator />
+                            <Separator />
 
-                        <div class="flex items-center justify-between">
-                            <span class="text-muted-foreground"
-                                >Fizetendő összesen</span
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground"
+                                    >Fizetendő összesen</span
+                                >
+                                <span class="text-2xl font-bold text-primary">
+                                    {{ totalPrice.toLocaleString('hu-HU') }} Ft
+                                </span>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                class="w-full"
+                                size="lg"
+                                :disabled="form.processing"
                             >
-                            <span class="text-2xl font-bold text-foreground">
-                                {{ totalPrice.toLocaleString('hu-HU') }} Ft
-                            </span>
-                        </div>
+                                {{
+                                    form.processing
+                                        ? 'Foglalás folyamatban...'
+                                        : 'Foglalás megerősítése'
+                                }}
+                            </Button>
 
-                        <Button
-                            type="submit"
-                            class="w-full"
-                            size="lg"
-                            :disabled="form.processing"
-                        >
-                            {{
-                                form.processing
-                                    ? 'Foglalás folyamatban...'
-                                    : 'Foglalás megerősítése'
-                            }}
-                        </Button>
-
-                        <p class="text-center text-xs text-muted-foreground">
-                            Ingyenes lemondás 48 órával a workshop előtt.
-                        </p>
-                    </form>
-                </div>
+                            <p
+                                class="text-center text-xs text-muted-foreground"
+                            >
+                                Ingyenes lemondás 48 órával a workshop előtt.
+                            </p>
+                        </form>
+                    </CardContent>
+                </Card>
             </div>
         </div>
     </AppLayout>

@@ -17,13 +17,16 @@ const props = defineProps<{
             id: number;
             starts_at: string;
             max_capacity: number;
-            bookings_count: number;
+            bookings_sum_headcount: number | null;
         }>;
     };
 }>();
 
-function spotsLeft(session: { max_capacity: number; bookings_count: number }) {
-    return session.max_capacity - session.bookings_count;
+function spotsLeft(session: {
+    max_capacity: number;
+    bookings_sum_headcount: number | null;
+}) {
+    return session.max_capacity - (session.bookings_sum_headcount ?? 0);
 }
 
 function formatDate(d: string) {

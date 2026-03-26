@@ -12,7 +12,8 @@ class WorkshopController extends Controller
     {
         $workshops = Workshop::with(['sessions' => function ($query) {
             $query->where('starts_at', '>', now())
-                ->withCount('bookings')
+                // withCount should be withSum, otherwise it just counts all entries and doesnt sum at all
+                ->withSum('bookings', 'headcount')
                 ->orderBy('starts_at');
         }, 'instructor'])
             ->where('archived', false)
@@ -29,7 +30,7 @@ class WorkshopController extends Controller
 
         $workshop->load(['sessions' => function ($query) {
             $query->where('starts_at', '>', now())
-                ->withCount('bookings')
+                ->withSum('bookings', 'headcount')
                 ->orderBy('starts_at');
         }, 'instructor']);
 

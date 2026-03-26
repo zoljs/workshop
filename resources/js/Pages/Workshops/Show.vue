@@ -20,7 +20,7 @@ const props = defineProps<{
             id: number;
             starts_at: string;
             max_capacity: number;
-            bookings_count: number;
+            bookings_sum_headcount: number;
         }>;
     };
 }>();
@@ -30,8 +30,11 @@ const selectedSession = ref<number | null>(
 );
 const headcount = ref(1);
 
-function spotsLeft(session: { max_capacity: number; bookings_count: number }) {
-    return session.max_capacity - session.bookings_count;
+function spotsLeft(session: {
+    max_capacity: number;
+    bookings_sum_headcount: number;
+}) {
+    return session.max_capacity - session.bookings_sum_headcount;
 }
 
 function formatTime(d: string) {
@@ -342,11 +345,6 @@ const imageUrl3 = `https://picsum.photos/seed/${props.workshop.id + 20}/400/300`
                                     >
                                         {{ workshop.instructor.name }}
                                     </h3>
-                                    <p
-                                        class="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                                    >
-                                        Lead Instructor
-                                    </p>
                                     <p
                                         class="text-sm leading-relaxed text-muted-foreground"
                                     >

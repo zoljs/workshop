@@ -35,7 +35,7 @@
 
         public function spotsRemaining(): int
         {
-            $sum = $this->bookings()->getQuery()->sum('headcount');
+            $sum = $this->bookings()->sum('headcount');
             return $this->max_capacity - $sum;
         }
     }
