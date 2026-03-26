@@ -31,5 +31,16 @@
         "vite": "^8.0.0",
         "vue": "^3.4.0",
         "vue-tsc": "^2.0.24"
+    },
+    "dependencies": {
+        "@tanstack/vue-table": "^8.21.3",
+        "@vueuse/core": "^14.2.1",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-vue-next": "^1.0.0",
+        "motion-v": "^2.2.0",
+        "reka-ui": "^2.9.2",
+        "tailwind-merge": "^3.5.0",
+        "tailwindcss-animate": "^1.0.7"
     }
 }

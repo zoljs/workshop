@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import Checkbox from '@/Components/Checkbox.vue';
+import { Button } from '@/Components/ui/button';
+import { Checkbox } from '@/Components/ui/checkbox';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps<{
@@ -20,79 +19,84 @@ const form = useForm({
 
 const submit = () => {
     form.post(route('login'), {
-        onFinish: () => {
-            form.reset('password');
-        },
+        onFinish: () => form.reset('password'),
     });
 };
 </script>
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head title="Bejelentkezés" />
 
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-zinc-900">Bejelentkezés</h1>
+            <p class="mt-1 text-sm text-zinc-500">
+                Add meg az adataidat a folytatáshoz.
+            </p>
+        </div>
 
-                <TextInput
+        <form @submit.prevent="submit" class="space-y-4">
+            <div class="space-y-1.5">
+                <Label for="email">Email</Label>
+                <Input
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
                     v-model="form.email"
                     required
                     autofocus
                     autocomplete="username"
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+                <p v-if="form.errors.email" class="text-xs text-red-500">
+                    {{ form.errors.email }}
+                </p>
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <Label for="password">Jelszó</Label>
+                    <Link
+                        v-if="canResetPassword"
+                        :href="route('password.request')"
+                        class="text-sm text-zinc-500 underline hover:text-zinc-800"
+                    >
+                        Elfelejtett jelszó?
+                    </Link>
+                </div>
+                <Input
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                 />
-
-                <InputError class="mt-2" :message="form.errors.password" />
+                <p v-if="form.errors.password" class="text-xs text-red-500">
+                    {{ form.errors.password }}
+                </p>
             </div>
 
-            <div class="mt-4 block">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
-                    >
-                </label>
+            <div class="flex items-center gap-2">
+                <Checkbox id="remember" v-model:checked="form.remember" />
+                <Label for="remember" class="font-normal text-zinc-600"
+                    >Emlékezz rám</Label
+                >
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
+            <Button type="submit" class="w-full" :disabled="form.processing">
+                {{ form.processing ? 'Bejelentkezés...' : 'Bejelentkezés' }}
+            </Button>
+
+            <p class="text-center text-sm text-zinc-500">
+                Még nincs fiókod?
                 <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    :href="route('register')"
+                    class="underline hover:text-zinc-800"
+                    >Regisztráció</Link
                 >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Log in
-                </PrimaryButton>
-            </div>
+            </p>
         </form>
     </GuestLayout>
 </template>
