@@ -17,21 +17,21 @@
 
             $admin = User::create([
                 'name'     => 'Adminisztrátor',
-                'email'    => 'admin@workshop.hu',
-                'password' => bcrypt('password'),
+                'email'    => 'admin@w.hu',
+                'password' => bcrypt('a'),
             ]);
             $admin->assignRole('admin');
 
             $instructor = User::create([
-                'name'     => 'Kovács Márta',
-                'email'    => 'marta@workshop.hu',
-                'password' => bcrypt('password'),
+                'name'     => 'Óraadó',
+                'email'    => 'ora@w.hu',
+                'password' => bcrypt('a'),
             ]);
             $instructor->assignRole('instructor');
 
             $testUser = User::create([
-                'name'     => 'User',
-                'email'    => 'user@a.a',
+                'name'     => 'Beka Kálmán',
+                'email'    => 'a@w.hu',
                 'password' => bcrypt('a'),
             ]);
             $testUser->assignRole('user');
