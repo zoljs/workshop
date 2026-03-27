@@ -140,7 +140,7 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
 
             <!-- Footer -->
             <div
-                class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4"
+                class="items-left mt-auto flex flex-col justify-between gap-2 border-t border-gray-100 pt-4 lg:flex-row lg:items-center"
             >
                 <span class="text-2xl font-bold text-primary">
                     {{ workshop.price_per_person.toLocaleString('hu-HU') }} Ft

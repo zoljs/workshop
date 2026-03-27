@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { Button } from '@/Components/ui/button';
 import { Link, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const isMobileMenuOpen = ref(false);
 const toggleMobileMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value;
 };
 
-const user = usePage().props.auth.user;
+const page = usePage();
+const user = page.props.auth.user;
+const roles = computed(() => (page.props.auth.roles ?? []) as string[]);
+
+const isInstructor = computed(() => roles.value.includes('instructor'));
+const isAdmin = computed(() => roles.value.includes('admin'));
 </script>
 
 <template>
@@ -50,6 +55,42 @@ const user = usePage().props.auth.user;
                     >
                         Workshopok
                     </Link>
+
+                    <!-- Logged in user links -->
+                    <template v-if="user">
+                        <Link
+                            :href="route('dashboard')"
+                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                        >
+                            Irányítópult
+                        </Link>
+                        <Link
+                            :href="route('dashboard.bookings')"
+                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                        >
+                            Foglalásaim
+                        </Link>
+                    </template>
+
+                    <!-- Instructor links -->
+                    <template v-if="isInstructor">
+                        <Link
+                            :href="route('instructor.workshops.index')"
+                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                        >
+                            Workshopjaim
+                        </Link>
+                    </template>
+
+                    <!-- Admin links -->
+                    <template v-if="isAdmin">
+                        <Link
+                            href="/admin"
+                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                        >
+                            Admin
+                        </Link>
+                    </template>
                 </div>
 
                 <!-- Right side -->
@@ -62,8 +103,8 @@ const user = usePage().props.auth.user;
                         </Button>
                     </template>
                     <template v-else>
-                        <Button s-child variant="ghost" size="lg">
-                            <Link :href="route('dashboard')">{{
+                        <Button as-child variant="ghost" size="lg">
+                            <Link :href="route('profile.edit')">{{
                                 user.name
                             }}</Link>
                         </Button>
@@ -72,8 +113,9 @@ const user = usePage().props.auth.user;
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
-                                >Kijelentkezés</Link
                             >
+                                Kijelentkezés
+                            </Link>
                         </Button>
                     </template>
                 </div>
@@ -101,35 +143,79 @@ const user = usePage().props.auth.user;
                     href="/"
                     class="border-b border-gray-200 py-2"
                     @click="toggleMobileMenu"
-                    >Főoldal</Link
                 >
+                    Főoldal
+                </Link>
                 <Link
                     href="/#workshops"
                     class="border-b border-gray-200 py-2"
                     @click="toggleMobileMenu"
-                    >Workshopok</Link
                 >
+                    Workshopok
+                </Link>
+
+                <!-- Logged in user links -->
+                <template v-if="user">
+                    <Link
+                        :href="route('dashboard')"
+                        class="border-b border-gray-200 py-2"
+                        @click="toggleMobileMenu"
+                    >
+                        Irányítópult
+                    </Link>
+                    <Link
+                        :href="route('dashboard.bookings')"
+                        class="border-b border-gray-200 py-2"
+                        @click="toggleMobileMenu"
+                    >
+                        Foglalásaim
+                    </Link>
+                </template>
+
+                <!-- Instructor links -->
+                <template v-if="isInstructor">
+                    <Link
+                        :href="route('instructor.workshops.index')"
+                        class="border-b border-gray-200 py-2"
+                        @click="toggleMobileMenu"
+                    >
+                        Workshopjaim
+                    </Link>
+                </template>
+
+                <!-- Admin links -->
+                <template v-if="isAdmin">
+                    <Link
+                        href="/admin"
+                        class="border-b border-gray-200 py-2"
+                        @click="toggleMobileMenu"
+                    >
+                        Admin
+                    </Link>
+                </template>
             </div>
+
             <div class="mt-auto flex flex-col gap-4 pt-8">
                 <template v-if="!user">
                     <Button as-child class="w-full">
-                        <Link :href="route('login')" @click="toggleMobileMenu"
-                            >Bejelentkezés</Link
-                        >
+                        <Link :href="route('login')" @click="toggleMobileMenu">
+                            Bejelentkezés
+                        </Link>
                     </Button>
                 </template>
                 <template v-else>
                     <Button as-child variant="ghost" class="w-full">
                         <Link
-                            :href="route('dashboard')"
+                            :href="route('profile.edit')"
                             @click="toggleMobileMenu"
-                            >{{ user.name }}</Link
                         >
+                            {{ user.name }}
+                        </Link>
                     </Button>
                     <Button as-child variant="outline" class="w-full">
-                        <Link :href="route('logout')" method="post" as="button"
-                            >Kijelentkezés</Link
-                        >
+                        <Link :href="route('logout')" method="post" as="button">
+                            Kijelentkezés
+                        </Link>
                     </Button>
                 </template>
             </div>
@@ -195,10 +281,10 @@ const user = usePage().props.auth.user;
                         <ul class="space-y-3">
                             <li>
                                 <a
-                                    href="mailto:hello@workshop.hu"
+                                    href="mailto:info@workshop.hu"
                                     class="transition-colors hover:text-foreground"
                                 >
-                                    hello@workshop.hu
+                                    info@workshop.hu
                                 </a>
                             </li>
                             <li>
@@ -235,8 +321,9 @@ const user = usePage().props.auth.user;
                             <Link
                                 href="/privacy"
                                 class="transition-colors hover:text-gray-800"
-                                >Adatkezelési Tájékoztató</Link
                             >
+                                Adatkezelési Tájékoztató
+                            </Link>
                         </li>
                     </ul>
                 </div>

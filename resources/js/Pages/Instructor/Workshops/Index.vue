@@ -14,7 +14,7 @@ import {
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { diffForHumans } from '@/lib/utils';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ArrowLeft, Pencil, Plus, Sparkles } from 'lucide-vue-next';
+import { Pencil, Plus, Sparkles } from 'lucide-vue-next';
 
 defineProps<{
     workshops: Array<{
@@ -84,13 +84,6 @@ function statusLocalization(
             >
                 <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.4fr]">
                     <section class="flex flex-col gap-8">
-                        <Button as-child variant="ghost" size="lg" class="w-24">
-                            <Link :href="`/dashboard`">
-                                <ArrowLeft />
-                                Vissza
-                            </Link>
-                        </Button>
-
                         <!-- Header -->
                         <header
                             class="flex flex-col justify-between gap-4 md:flex-row md:items-end"
@@ -126,11 +119,7 @@ function statusLocalization(
                                 </h2>
 
                                 <div class="flex flex-row gap-2">
-                                    <Button
-                                        as-child
-                                        variant="secondary"
-                                        size="lg"
-                                    >
+                                    <Button as-child variant="ghost" size="lg">
                                         <Link
                                             :href="
                                                 route(

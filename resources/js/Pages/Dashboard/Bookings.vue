@@ -15,15 +15,8 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
-import DashboardLayout from '@/Layouts/DashboardLayout.vue';
-import {
-    ArrowLeft,
-    Info,
-    Pencil,
-    Plus,
-    Sparkles,
-    TriangleAlert,
-} from 'lucide-vue-next';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { Info, Pencil, Plus, Sparkles, TriangleAlert } from 'lucide-vue-next';
 
 const props = defineProps<{
     user: {
@@ -99,7 +92,7 @@ function statusLocalization(
 <template>
     <Head title="Foglalásaim" />
 
-    <DashboardLayout>
+    <AppLayout>
         <div class="min-h-screen bg-background">
             <div
                 class="mx-auto max-w-7xl px-4 pb-40 pt-20 sm:px-6 md:pt-32 lg:px-8"
@@ -107,13 +100,6 @@ function statusLocalization(
                 <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_0.4fr]">
                     <!-- Main -->
                     <section class="flex flex-col gap-8">
-                        <Button as-child variant="ghost" size="lg" class="w-24">
-                            <Link :href="`/dashboard`">
-                                <ArrowLeft />
-                                Vissza
-                            </Link>
-                        </Button>
-
                         <!-- Header -->
                         <header
                             class="flex flex-col justify-between gap-4 md:flex-row md:items-end"
@@ -256,7 +242,7 @@ function statusLocalization(
                                             variant="link"
                                             class="mt-2"
                                         >
-                                            <Link href="/workshops"
+                                            <Link href="/#workshops"
                                                 >Műhelyek böngészése</Link
                                             >
                                         </Button>
@@ -337,10 +323,10 @@ function statusLocalization(
                                 </div>
                                 <Separator class="opacity-20" />
                                 <p
-                                    class="rounded-3xl bg-amber-600/50 p-4 text-base leading-relaxed text-orange-200 opacity-80"
+                                    class="rounded-3xl bg-white/10 p-4 text-base leading-relaxed text-orange-200 opacity-80"
                                 >
-                                    Szerezz pontokat vásárlással, hogy kaphass
-                                    kedvezményt a következő vásárlásaidra!
+                                    Szerezz pontokat vásárlásaiddal, hogy
+                                    beválthasd őket exkluzív jutalmakra!
                                 </p>
                             </CardContent>
                         </Card>
@@ -348,5 +334,5 @@ function statusLocalization(
                 </div>
             </div>
         </div>
-    </DashboardLayout>
+    </AppLayout>
 </template>

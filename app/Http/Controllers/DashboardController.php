@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
             // only the 3 most recent upcoming bookings for the overview
             'upcomingBookings' => auth()->user()->bookings()
-                ->with('session.workshop')
+                ->with('session.workshop.instructor')
                 ->whereHas('session', fn($q) => $q->where('starts_at', '>', now()))
                 ->latest()
                 ->take(3)
