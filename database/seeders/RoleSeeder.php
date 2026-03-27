@@ -11,7 +11,6 @@
         {
             Role::firstOrCreate(['name' => 'user']);
             Role::firstOrCreate(['name' => 'instructor']);
-            Role::firstOrCreate(['name' => 'support']);
             Role::firstOrCreate(['name' => 'admin']);
         }
     }

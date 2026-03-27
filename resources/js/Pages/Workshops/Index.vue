@@ -18,7 +18,7 @@ defineProps<{
             id: number;
             starts_at: string;
             max_capacity: number;
-            bookings_count: number;
+            bookings_sum_headcount: number;
         }>;
     }>;
 }>();

@@ -9,14 +9,13 @@
 
     class WorkshopSession extends Model
     {
-        use HasFactory;
-
         protected $table = 'workshop_sessions';
 
         protected $fillable = [
             'workshop_id',
             'starts_at',
             'max_capacity',
+            'status',
         ];
 
         protected $casts = [

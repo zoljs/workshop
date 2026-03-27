@@ -29,26 +29,13 @@
             ]);
             $instructor->assignRole('instructor');
 
-            $support = User::create([
-                'name'     => 'Nagy Péter',
-                'email'    => 'peter@workshop.hu',
-                'password' => bcrypt('password'),
-            ]);
-            $support->assignRole('support');
-
             $testUser = User::create([
-                'name'     => 'Teszt Felhasználó',
+                'name'     => 'User',
                 'email'    => 'user@a.a',
                 'password' => bcrypt('a'),
             ]);
             $testUser->assignRole('user');
 
-            $extraUser = User::create([
-                'name'     => 'Kiss János',
-                'email'    => 'janos@workshop.hu',
-                'password' => bcrypt('password'),
-            ]);
-            $extraUser->assignRole('user');
 
             $workshops = [
                 [

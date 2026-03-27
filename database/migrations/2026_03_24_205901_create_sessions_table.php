@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('workshop_id')->constrained()->cascadeOnDelete();
             $table->timestamp('starts_at');
             $table->integer('max_capacity');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

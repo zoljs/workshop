@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('headcount');
             $table->string('payment_ref')->nullable();
             $table->integer('amount_paid')->nullable();
+            $table->string('status')->default('confirmed');
             $table->timestamps();
             $table->unique(['user_id', 'session_id']);
         });

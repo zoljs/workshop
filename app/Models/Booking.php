@@ -8,14 +8,13 @@
 
     class Booking extends Model
     {
-        use HasFactory;
-
         protected $fillable = [
             'user_id',
             'session_id',
             'headcount',
             'payment_ref',
             'amount_paid',
+            'status',
         ];
 
         protected $casts = [

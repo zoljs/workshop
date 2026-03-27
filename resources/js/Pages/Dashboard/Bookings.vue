@@ -79,6 +79,23 @@ function statusVariant(
             return 'default';
     }
 }
+
+function statusLocalization(
+    status?: string,
+): 'Megerősítve' | 'Lemondva' | 'Módosítva' | 'Megszünt' | '-' {
+    switch (status) {
+        case 'confirmed':
+            return 'Megerősítve';
+        case 'cancelled_by_user ':
+            return 'Lemondva';
+        case 'modified':
+            return 'Módosítva';
+        case 'cancelled_by_instructor':
+            return 'Megszünt';
+        default:
+            return '-';
+    }
+}
 </script>
 
 <template>
@@ -121,13 +138,13 @@ function statusVariant(
                         <Tabs default-value="upcoming">
                             <TabsList>
                                 <TabsTrigger value="upcoming">
-                                    Upcoming
+                                    Közelgő
                                     <Badge variant="destructive" class="ml-2">{{
                                         upcomingBookings.length
                                     }}</Badge>
                                 </TabsTrigger>
                                 <TabsTrigger value="past">
-                                    Past
+                                    Korábbi
                                     <Badge variant="outline" class="ml-2">{{
                                         pastBookings.length
                                     }}</Badge>
@@ -136,7 +153,7 @@ function statusVariant(
 
                             <!-- Upcoming Tab -->
                             <TabsContent value="upcoming" class="mt-4">
-                                <Card>
+                                <Card class="overflow-hidden">
                                     <Table v-if="upcomingBookings.length > 0">
                                         <TableHeader>
                                             <TableRow>
@@ -148,6 +165,7 @@ function statusVariant(
                                                 <TableHead>
                                                     Résztvevők
                                                 </TableHead>
+                                                <TableHead />
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
@@ -190,8 +208,9 @@ function statusVariant(
                                                         "
                                                     >
                                                         {{
-                                                            booking.status ??
-                                                            'Megerősítve'
+                                                            statusLocalization(
+                                                                booking.status,
+                                                            )
                                                         }}
                                                     </Badge>
                                                 </TableCell>
@@ -250,7 +269,7 @@ function statusVariant(
                                             class="mt-2"
                                         >
                                             <Link href="/workshops"
-                                                >Browse workshops →</Link
+                                                >Műhelyek böngészése</Link
                                             >
                                         </Button>
                                     </CardContent>
@@ -297,7 +316,7 @@ function statusVariant(
                         class="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start"
                     >
                         <Button as-child size="lg" class="h-20">
-                            <Link href="/workshops">
+                            <Link href="/#workshops">
                                 <Plus />
                                 Új workshop foglalás
                             </Link>
