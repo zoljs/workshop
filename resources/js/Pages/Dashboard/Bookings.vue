@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 import { Badge } from '@/Components/ui/badge';
@@ -19,10 +19,10 @@ import DashboardLayout from '@/Layouts/DashboardLayout.vue';
 import {
     ArrowLeft,
     Info,
+    Pencil,
     Plus,
     Sparkles,
     TriangleAlert,
-    X,
 } from 'lucide-vue-next';
 
 const props = defineProps<{
@@ -34,7 +34,7 @@ const props = defineProps<{
         id: number;
         headcount: number;
         amount_paid: number;
-        status?: 'Confirmed' | 'Modified' | 'Canceled';
+        status?: string;
         session: {
             starts_at: string;
             workshop: {
@@ -71,9 +71,9 @@ function statusVariant(
     switch (status) {
         case 'confirmed':
             return 'default';
-        case 'Modified':
-            return 'secondary';
-        case 'Canceled':
+        case 'cancelled_by_user':
+            return 'destructive';
+        case 'cancelled_by_instructor':
             return 'destructive';
         default:
             return 'default';
@@ -82,14 +82,12 @@ function statusVariant(
 
 function statusLocalization(
     status?: string,
-): 'Megerősítve' | 'Lemondva' | 'Módosítva' | 'Megszünt' | '-' {
+): 'Megerősítve' | 'Lemondva' | 'Megszünt' | '-' {
     switch (status) {
         case 'confirmed':
             return 'Megerősítve';
         case 'cancelled_by_user ':
             return 'Lemondva';
-        case 'modified':
-            return 'Módosítva';
         case 'cancelled_by_instructor':
             return 'Megszünt';
         default:
@@ -223,33 +221,23 @@ function statusLocalization(
                                                 >
                                                     <Button
                                                         v-if="
-                                                            booking.status !==
-                                                            'Canceled'
+                                                            !booking.status?.startsWith(
+                                                                'cancelled',
+                                                            )
                                                         "
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        title="Cancel"
-                                                        class="text-destructive hover:text-destructive"
-                                                    >
-                                                        <span
-                                                            class="material-symbols-outlined text-lg"
-                                                        >
-                                                            <X />
-                                                        </span>
-                                                    </Button>
-                                                    <Button
-                                                        v-if="
-                                                            booking.status ===
-                                                            'Canceled'
-                                                        "
-                                                        variant="ghost"
-                                                        size="sm"
                                                         as-child
+                                                        variant="outline"
+                                                        size="sm"
+                                                        @click="
+                                                            router.visit(
+                                                                route(
+                                                                    'bookings.edit',
+                                                                    booking.id,
+                                                                ),
+                                                            )
+                                                        "
                                                     >
-                                                        <Link
-                                                            :href="`/workshops/${booking.session.workshop.id}`"
-                                                            >Rebook</Link
-                                                        >
+                                                        <Link><Pencil /></Link>
                                                     </Button>
                                                 </TableCell>
                                             </TableRow>
@@ -362,13 +350,3 @@ function statusLocalization(
         </div>
     </DashboardLayout>
 </template>
-
-<style scoped>
-.material-symbols-outlined {
-    font-variation-settings:
-        'FILL' 0,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 24;
-}
-</style>

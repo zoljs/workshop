@@ -21,12 +21,13 @@ const props = defineProps<{
             starts_at: string;
             max_capacity: number;
             bookings_sum_headcount: number;
+            status: string;
         }>;
     };
 }>();
 
 const selectedSession = ref<number | null>(
-    props.workshop.sessions[0]?.id ?? null,
+    props.workshop.sessions.find((s) => s.status === 'active')?.id ?? null,
 );
 const headcount = ref(1);
 
@@ -239,85 +240,100 @@ const imageUrl3 = `https://picsum.photos/seed/${props.workshop.id + 20}/400/300`
                                 v-if="workshop.sessions.length > 0"
                                 class="space-y-3"
                             >
-                                <div
+                                <template
                                     v-for="session in workshop.sessions"
                                     :key="session.id"
-                                    class="flex cursor-pointer items-center gap-4 rounded-2xl bg-card p-4 transition-colors"
-                                    :class="
-                                        selectedSession === session.id
-                                            ? 'border-2 border-border'
-                                            : ''
-                                    "
-                                    @click="selectedSession = session.id"
                                 >
-                                    <!-- Date box -->
                                     <div
-                                        class="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-background text-center"
+                                        v-if="session.status === 'active'"
+                                        class="flex cursor-pointer items-center gap-4 rounded-2xl bg-card p-4 transition-colors"
+                                        :class="
+                                            selectedSession === session.id
+                                                ? 'border-2 border-border'
+                                                : ''
+                                        "
+                                        @click="selectedSession = session.id"
                                     >
-                                        <span
-                                            class="text-xs font-bold uppercase text-muted-foreground"
-                                            >{{
-                                                formatMonth(session.starts_at)
-                                            }}</span
-                                        >
-                                        <span
-                                            class="text-xl font-bold leading-none text-foreground"
-                                            >{{
-                                                formatDayNum(session.starts_at)
-                                            }}</span
-                                        >
-                                    </div>
-
-                                    <!-- Time + spots -->
-                                    <div class="flex-1">
-                                        <p
-                                            class="font-semibold text-foreground"
-                                        >
-                                            {{ formatTime(session.starts_at) }}
-                                        </p>
+                                        <!-- Date box -->
                                         <div
-                                            class="mt-1 flex items-center gap-1.5 text-sm"
-                                            :class="
-                                                spotsLeft(session) <= 3
-                                                    ? 'text-destructive'
-                                                    : 'text-primary'
-                                            "
+                                            class="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-background text-center"
                                         >
                                             <span
-                                                class="h-2 w-2 rounded-full"
-                                                :class="
-                                                    spotsLeft(session) <= 3
-                                                        ? 'bg-destructive'
-                                                        : 'bg-primary'
-                                                "
-                                            />
+                                                class="text-xs font-bold uppercase text-muted-foreground"
+                                                >{{
+                                                    formatMonth(
+                                                        session.starts_at,
+                                                    )
+                                                }}</span
+                                            >
                                             <span
-                                                >{{ spotsLeft(session) }} hely
-                                                maradt</span
+                                                class="text-xl font-bold leading-none text-foreground"
+                                                >{{
+                                                    formatDayNum(
+                                                        session.starts_at,
+                                                    )
+                                                }}</span
                                             >
                                         </div>
-                                    </div>
 
-                                    <!-- Action -->
-                                    <div class="flex items-center gap-2">
-                                        <Button
-                                            v-if="
-                                                selectedSession !== session.id
-                                            "
-                                            variant="secondary"
-                                            @click.stop="
-                                                selectedSession = session.id
-                                            "
-                                        >
-                                            Foglalás
-                                            <TicketPlus />
-                                        </Button>
-                                        <Button v-else>
-                                            Kiválasztva
-                                            <Check />
-                                        </Button>
+                                        <!-- Time + spots -->
+                                        <div class="flex-1">
+                                            <p
+                                                class="font-semibold text-foreground"
+                                            >
+                                                {{
+                                                    formatTime(
+                                                        session.starts_at,
+                                                    )
+                                                }}
+                                            </p>
+                                            <div
+                                                class="mt-1 flex items-center gap-1.5 text-sm"
+                                                :class="
+                                                    spotsLeft(session) <= 3
+                                                        ? 'text-destructive'
+                                                        : 'text-primary'
+                                                "
+                                            >
+                                                <span
+                                                    class="h-2 w-2 rounded-full"
+                                                    :class="
+                                                        spotsLeft(session) <= 3
+                                                            ? 'bg-destructive'
+                                                            : 'bg-primary'
+                                                    "
+                                                />
+                                                <span
+                                                    >{{
+                                                        spotsLeft(session)
+                                                    }}
+                                                    hely maradt</span
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <!-- Action -->
+                                        <div class="flex items-center gap-2">
+                                            <Button
+                                                v-if="
+                                                    selectedSession !==
+                                                    session.id
+                                                "
+                                                variant="secondary"
+                                                @click.stop="
+                                                    selectedSession = session.id
+                                                "
+                                            >
+                                                Foglalás
+                                                <TicketPlus />
+                                            </Button>
+                                            <Button v-else>
+                                                Kiválasztva
+                                                <Check />
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
+                                </template>
                             </div>
 
                             <p v-else class="italic text-muted-foreground">

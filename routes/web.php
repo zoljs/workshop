@@ -43,6 +43,9 @@
         // Booking routes
         Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
         Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+        Route::get('/bookings/{booking}/edit', [BookingController::class, 'edit'])->name('bookings.edit');
+        Route::patch('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+        Route::patch('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 
         // Instructor routes
         Route::middleware('role:instructor')->prefix('instructor')->name('instructor.')->group(function () {

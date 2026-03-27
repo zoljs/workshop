@@ -1,0 +1,203 @@
+<script setup lang="ts">
+import { Badge } from '@/Components/ui/badge';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardHeader } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { ArrowLeft } from 'lucide-vue-next';
+import { computed } from 'vue';
+
+const props = defineProps<{
+    booking: {
+        id: number;
+        headcount: number;
+        session: {
+            id: number;
+            starts_at: string;
+            spots_left: number;
+            workshop: {
+                id: number;
+                name: string;
+                price_per_person: number;
+                duration_minutes: number;
+            };
+        };
+    };
+}>();
+
+const form = useForm({
+    headcount: props.booking.headcount,
+});
+
+const totalPrice = computed(
+    () => props.booking.session.workshop.price_per_person * form.headcount,
+);
+
+function formatDate(d: string) {
+    return new Date(d).toLocaleString('hu-HU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
+function submit() {
+    form.patch(route('bookings.update', props.booking.id));
+}
+
+function cancel() {
+    if (confirm('Biztosan le szeretnéd mondani ezt a foglalást?')) {
+        router.patch(route('bookings.cancel', props.booking.id));
+    }
+}
+</script>
+
+<template>
+    <Head :title="`Foglalás módosítása – ${booking.session.workshop.name}`" />
+
+    <AppLayout>
+        <div class="min-h-screen bg-background">
+            <div class="mx-auto flex max-w-lg flex-col gap-8 px-6 pb-24 pt-32">
+                <Button as-child variant="ghost" size="lg" class="w-24">
+                    <Link :href="route('dashboard.bookings')">
+                        <ArrowLeft />
+                        Vissza
+                    </Link>
+                </Button>
+
+                <!-- Summary card -->
+                <Card>
+                    <CardHeader class="flex flex-row justify-between">
+                        <h1 class="mb-4 text-2xl font-bold text-foreground">
+                            {{ booking.session.workshop.name }}
+                        </h1>
+                        <Badge
+                            variant="default"
+                            class="mb-3 text-xs uppercase tracking-widest"
+                        >
+                            {{ booking.session.workshop.duration_minutes }} perc
+                        </Badge>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="space-y-2 text-sm text-muted-foreground">
+                            <div class="flex justify-between">
+                                <span>Időpont</span>
+                                <span class="font-medium text-foreground">{{
+                                    formatDate(booking.session.starts_at)
+                                }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Szabad helyek</span>
+                                <span class="font-medium text-foreground">{{
+                                    booking.session.spots_left
+                                }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Ár / fő</span>
+                                <span class="font-medium text-foreground">
+                                    {{
+                                        booking.session.workshop.price_per_person.toLocaleString(
+                                            'hu-HU',
+                                        )
+                                    }}
+                                    Ft
+                                </span>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <!-- Edit form -->
+                <Card>
+                    <CardHeader>
+                        <p class="text-lg font-semibold text-muted-foreground">
+                            Hány főre módosítod?
+                        </p>
+                    </CardHeader>
+                    <CardContent>
+                        <form @submit.prevent="submit" class="space-y-6">
+                            <div class="flex items-center gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    :disabled="form.headcount <= 1"
+                                    @click="form.headcount--"
+                                >
+                                    −
+                                </Button>
+                                <span
+                                    class="w-8 text-center text-2xl font-bold"
+                                >
+                                    {{ form.headcount }}
+                                </span>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    :disabled="
+                                        form.headcount >=
+                                        Math.min(10, booking.session.spots_left)
+                                    "
+                                    @click="form.headcount++"
+                                >
+                                    +
+                                </Button>
+                            </div>
+                            <p
+                                v-if="form.errors.headcount"
+                                class="mt-2 text-xs text-destructive"
+                            >
+                                {{ form.errors.headcount }}
+                            </p>
+
+                            <Separator />
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-muted-foreground"
+                                    >Fizetendő összesen</span
+                                >
+                                <span class="text-2xl font-bold text-primary">
+                                    {{ totalPrice.toLocaleString('hu-HU') }} Ft
+                                </span>
+                            </div>
+
+                            <Button
+                                type="submit"
+                                class="w-full"
+                                size="lg"
+                                :disabled="form.processing"
+                            >
+                                {{
+                                    form.processing
+                                        ? 'Módosítás folyamatban...'
+                                        : 'Módosítás megerősítése'
+                                }}
+                            </Button>
+
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                class="w-full"
+                                size="lg"
+                                :disabled="form.processing"
+                                @click="cancel"
+                            >
+                                Foglalás lemondása
+                            </Button>
+
+                            <p
+                                class="text-center text-xs text-muted-foreground"
+                            >
+                                Ingyenes lemondás 48 órával a workshop előtt.
+                            </p>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    </AppLayout>
+</template>

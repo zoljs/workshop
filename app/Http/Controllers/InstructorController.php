@@ -60,6 +60,11 @@ class InstructorController extends Controller
     {
         $this->authorizeWorkshop($workshop);
 
+        $workshop->load(['sessions' => function ($query) {
+            $query->withSum('bookings', 'headcount')
+                ->orderBy('starts_at');
+        }]);
+
         return Inertia::render('Instructor/Workshops/Edit', [
             'workshop' => $workshop,
         ]);

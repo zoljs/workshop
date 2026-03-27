@@ -97,4 +97,93 @@ class BookingController extends Controller
             return redirect()->route('dashboard')->with('success', 'Sikeres foglalás!');
         });
     }
+
+    public function edit(Request $request, Booking $booking): Response|RedirectResponse
+    {
+        // Make sure the booking belongs to the current user
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // If it is cancelled
+        if ($booking->status !== 'confirmed') {
+            return redirect()->{('dashbord.bookings')->with('error', 'Ez a foglalás nem módosítható.')};
+        }
+
+        // Can't edit if session is in the past
+        if ($booking->session->starts_at->isPast()) {
+            return redirect()->route('dashboard.bookings')->with('error', 'Ez az időpont már elmúlt.');
+        }
+
+        $booking->load('session.workshop');
+
+        return Inertia::render('Bookings/Edit', [
+            'booking' => [
+                'id' => $booking->id,
+                'headcount' => $booking->headcount,
+                'session' => [
+                    'id' => $booking->session->id,
+                    'starts_at' => $booking->session->starts_at,
+                    'spots_left' => $booking->session->spotsRemaining() + $booking->headcount,
+                    'workshop' => [
+                        'id' => $booking->session->workshop->id,
+                        'name' => $booking->session->workshop->name,
+                        'price_per_person' => $booking->session->workshop->price_per_person,
+                        'duration_minutes' => $booking->session->workshop->price_per_person,
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function update(Request $request, Booking $booking): RedirectResponse
+    {
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($booking->status !== 'confirmed') {
+            return back()->withErrors(['headcount' => 'Ez a foglalás nem módosítható.']);
+        }
+
+        $validated = $request->validate([
+            'headcount' => 'required|integer|min:1|max:10',
+        ]);
+
+        return \DB::transaction(function () use ($booking, $validated) {
+            $session = $booking->session;
+
+            $availableSpots = $session->spotsRemaining() + $booking->headcount;
+
+            if ($availableSpots < $validated['headcount']) {
+                return back()->withErrors(['headcount' => 'Nincs elég szabad hely.']);
+            }
+
+            $booking->update([
+                'headcount' => $validated['headcount'],
+                'amount_paid' => $session->workshop->price_per_person * $validated['headcount'],
+            ]);
+
+            return redirect()->route('dashboard')->with('success', 'Foglalás módosítva!');
+        });
+    }
+
+    public function cancel(Request $request, Booking $booking): RedirectResponse
+    {
+        if ($booking->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($booking->status !== 'confirmed') {
+            return back()->with('error', 'Ez a foglalás már le van mondva.');
+        }
+
+        if ($booking->session->starts_at->isPast()) {
+            return back()->with('error', 'Ez az időpont már elmúlt.');
+        }
+
+        $booking->update(['status' => 'cancelled_by_user']);
+
+        return redirect()->route('dashboard.bookings')->with('success', 'Foglalás lemondva.');
+    }
 }

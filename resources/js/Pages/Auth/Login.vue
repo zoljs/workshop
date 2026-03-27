@@ -50,7 +50,7 @@ const submit = () => {
                     autofocus
                     autocomplete="username"
                 />
-                <p v-if="form.errors.email" class="text-xs text-red-500">
+                <p v-if="form.errors.email" class="text-md text-destructive">
                     {{ form.errors.email }}
                 </p>
             </div>
@@ -73,7 +73,7 @@ const submit = () => {
                     required
                     autocomplete="current-password"
                 />
-                <p v-if="form.errors.password" class="text-xs text-red-500">
+                <p v-if="form.errors.password" class="text-md text-destructive">
                     {{ form.errors.password }}
                 </p>
             </div>

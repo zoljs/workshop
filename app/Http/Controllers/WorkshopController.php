@@ -30,6 +30,7 @@ class WorkshopController extends Controller
 
         $workshop->load(['sessions' => function ($query) {
             $query->where('starts_at', '>', now())
+                ->where('status', 'active')
                 ->withSum('bookings', 'headcount')
                 ->orderBy('starts_at');
         }, 'instructor']);

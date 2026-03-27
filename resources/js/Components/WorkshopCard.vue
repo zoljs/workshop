@@ -2,6 +2,7 @@
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Link } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 const props = defineProps<{
     workshop: {
@@ -18,9 +19,15 @@ const props = defineProps<{
             starts_at: string;
             max_capacity: number;
             bookings_sum_headcount: number | null;
+            status: string;
         }>;
     };
+    preview?: boolean;
 }>();
+
+const activeSessions = computed(() =>
+    props.workshop.sessions.filter((s) => s.status === 'active'),
+);
 
 function spotsLeft(session: {
     max_capacity: number;
@@ -43,7 +50,8 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
 
 <template>
     <Card
-        class="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-3"
+        class="group flex flex-col overflow-hidden transition-all duration-300"
+        :class="{ 'hover:-translate-y-3': !preview }"
     >
         <!-- Image -->
         <div class="relative h-48 overflow-hidden">
@@ -105,7 +113,7 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
                     >
                 </div>
                 <p
-                    v-if="workshop.sessions.length === 0"
+                    v-if="activeSessions.length === 0"
                     class="text-sm italic text-gray-400"
                 >
                     Nincs közelgő időpont
@@ -137,7 +145,7 @@ const imageUrl = `https://picsum.photos/seed/${props.workshop.id}/600/400`;
                 <span class="text-2xl font-bold text-primary">
                     {{ workshop.price_per_person.toLocaleString('hu-HU') }} Ft
                 </span>
-                <Button as-child size="lg">
+                <Button v-if="!preview" as-child size="lg">
                     <Link :href="`/workshops/${workshop.id}`"
                         >Időpontfoglalás</Link
                     >

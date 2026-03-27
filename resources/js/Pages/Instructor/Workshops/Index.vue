@@ -12,8 +12,9 @@ import {
     TableRow,
 } from '@/Components/ui/table';
 import AppLayout from '@/Layouts/AppLayout.vue';
+import { diffForHumans } from '@/lib/utils';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ArrowLeft, Pencil, Plus, Sparkles, Trash2 } from 'lucide-vue-next';
+import { ArrowLeft, Pencil, Plus, Sparkles } from 'lucide-vue-next';
 
 defineProps<{
     workshops: Array<{
@@ -52,7 +53,7 @@ function statusVariant(
     switch (status) {
         case 'active':
             return 'default';
-        case 'cancelled_by_instructor':
+        case 'cancelled':
             return 'destructive';
         default:
             return 'secondary';
@@ -65,9 +66,7 @@ function statusLocalization(
     switch (status) {
         case 'active':
             return 'Aktív';
-        case 'cancelled_by_user ':
-            return 'Lemondva';
-        case 'cancelled_by_instructor':
+        case 'cancelled':
             return 'Megszünt';
         default:
             return '-';
@@ -121,14 +120,16 @@ function statusLocalization(
                                     class="text-2xl font-bold leading-tight text-primary md:text-4xl"
                                 >
                                     {{ workshop.name }}
-                                    {{ workshop.archived ? '(archived)' : '' }}
+                                    {{
+                                        workshop.archived ? '(Archiválva)' : ''
+                                    }}
                                 </h2>
 
                                 <div class="flex flex-row gap-2">
                                     <Button
                                         as-child
-                                        variant="outline"
-                                        size="sm"
+                                        variant="secondary"
+                                        size="lg"
                                     >
                                         <Link
                                             :href="
@@ -137,16 +138,8 @@ function statusLocalization(
                                                     workshop.id,
                                                 )
                                             "
-                                            ><Pencil
-                                        /></Link>
-                                    </Button>
-                                    <Button
-                                        v-if="!workshop.archived"
-                                        variant="destructive"
-                                        size="sm"
-                                        @click="archive(workshop.id)"
-                                    >
-                                        <Trash2 />
+                                            >Szerkesztés</Link
+                                        >
                                     </Button>
                                 </div>
                             </div>
@@ -162,13 +155,15 @@ function statusLocalization(
                                             <TableHead />
                                         </TableRow>
                                     </TableHeader>
-                                    <TableBody>
+                                    <TableBody
+                                        v-if="workshop.sessions.length > 0"
+                                    >
                                         <TableRow
                                             v-for="session in workshop.sessions"
                                             :key="session.id"
                                         >
                                             <TableCell>{{
-                                                session.starts_at
+                                                diffForHumans(session.starts_at)
                                             }}</TableCell>
                                             <TableCell>{{
                                                 session.max_capacity
@@ -201,6 +196,10 @@ function statusLocalization(
                                                     as-child
                                                     variant="outline"
                                                     size="sm"
+                                                    v-if="
+                                                        session.status !==
+                                                        'cancelled'
+                                                    "
                                                 >
                                                     <Link
                                                         :href="
@@ -212,21 +211,18 @@ function statusLocalization(
                                                         ><Pencil
                                                     /></Link>
                                                 </Button>
-                                                <Button
-                                                    v-if="
-                                                        session.status ===
-                                                        'active'
-                                                    "
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    @click="
-                                                        cancelSession(
-                                                            session.id,
-                                                        )
-                                                    "
-                                                >
-                                                    <Trash2 />
-                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                    <TableBody
+                                        v-if="workshop.sessions.length <= 0"
+                                    >
+                                        <TableRow>
+                                            <TableCell
+                                                colspan="5"
+                                                class="text-center text-muted-foreground"
+                                            >
+                                                Nincsenek még időpontok.
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>
