@@ -28,6 +28,7 @@ defineProps<{
             starts_at: string;
             max_capacity: number;
             bookings_sum_headcount: number;
+            status: string;
         }>;
     }>;
 }>();

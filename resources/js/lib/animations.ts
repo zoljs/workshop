@@ -1,5 +1,5 @@
 // animations.ts
-import { stagger } from "motion-v";
+import { stagger } from 'motion-v';
 
 export const containerVariants = {
     hidden: { opacity: 0 },
@@ -22,7 +22,7 @@ export const rotateVariants = {
         rotate: 0,
         opacity: 1,
         transition: {
-            type: "spring",
+            type: 'spring' as const,
             damping: 20,
             stiffness: 100,
         },
@@ -38,7 +38,7 @@ export const slideVariants = {
         x: 0,
         opacity: 1,
         transition: {
-            type: "spring",
+            type: 'spring' as const,
             damping: 20,
             stiffness: 100,
         },
