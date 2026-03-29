@@ -13,39 +13,33 @@ import {
 } from '@/Components/ui/table';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { diffForHumans } from '@/lib/utils';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { Pencil, Plus, Sparkles } from 'lucide-vue-next';
 
-defineProps<{
+const props = defineProps<{
     workshops: Array<{
         id: number;
         name: string;
         archived: boolean;
+        edit_url: string;
+        archive_url: string;
         sessions: Array<{
             id: number;
             starts_at: string;
             max_capacity: number;
             status: string;
             bookings_sum_headcount: number | null;
+            edit_url: string;
+            cancel_url: string;
         }>;
     }>;
+    workshop_create: string;
+    session_create: string;
+    instructor?: {
+        id: number;
+        name: string;
+    };
 }>();
-
-function archive(id: number) {
-    if (confirm('Archive this workshop?')) {
-        router.patch(route('instructor.workshops.archive', id));
-    }
-}
-
-function cancelSession(id: number) {
-    if (
-        confirm(
-            'Cancel this session? All bookings will be marked as cancelled.',
-        )
-    ) {
-        router.patch(route('instructor.sessions.cancel', id));
-    }
-}
 
 function statusVariant(
     status?: string,
@@ -92,7 +86,11 @@ function statusLocalization(
                                 <h1
                                     class="text-4xl font-bold leading-tight text-primary md:text-6xl"
                                 >
-                                    Workshopjaim
+                                    {{
+                                        instructor
+                                            ? instructor?.name + ' workshopjai'
+                                            : 'Workshopjaim'
+                                    }}
                                 </h1>
                                 <p class="mt-1 text-muted-foreground">
                                     Kezeld a saját workshopjaid és az
@@ -120,13 +118,7 @@ function statusLocalization(
 
                                 <div class="flex flex-row gap-2">
                                     <Button as-child variant="ghost" size="lg">
-                                        <Link
-                                            :href="
-                                                route(
-                                                    'instructor.workshops.edit',
-                                                    workshop.id,
-                                                )
-                                            "
+                                        <Link :href="workshop.edit_url"
                                             >Szerkesztés</Link
                                         >
                                     </Button>
@@ -136,13 +128,19 @@ function statusLocalization(
                             <Card class="overflow-hidden">
                                 <Table>
                                     <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Dátum</TableHead>
-                                            <TableHead>Kapacitás</TableHead>
-                                            <TableHead>Foglalt</TableHead>
-                                            <TableHead>Státusz</TableHead>
-                                            <TableHead />
-                                        </TableRow>
+                                        <TableHead class="w-2/5"
+                                            >Dátum</TableHead
+                                        >
+                                        <TableHead class="w-16"
+                                            >Kapacitás</TableHead
+                                        >
+                                        <TableHead class="w-16"
+                                            >Foglalt</TableHead
+                                        >
+                                        <TableHead class="w-1/5"
+                                            >Státusz</TableHead
+                                        >
+                                        <TableHead class="w-16" />
                                     </TableHeader>
                                     <TableBody
                                         v-if="workshop.sessions.length > 0"
@@ -179,7 +177,7 @@ function statusLocalization(
                                                 </Badge>
                                             </TableCell>
                                             <TableCell
-                                                class="flex gap-2 justify-self-end"
+                                                class="flex gap-2 justify-self-end text-right"
                                             >
                                                 <Button
                                                     as-child
@@ -191,12 +189,7 @@ function statusLocalization(
                                                     "
                                                 >
                                                     <Link
-                                                        :href="
-                                                            route(
-                                                                'instructor.sessions.edit',
-                                                                session.id,
-                                                            )
-                                                        "
+                                                        :href="session.edit_url"
                                                         ><Pencil
                                                     /></Link>
                                                 </Button>
@@ -223,7 +216,7 @@ function statusLocalization(
                         class="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start"
                     >
                         <Button as-child size="lg" class="h-20">
-                            <Link :href="route('instructor.workshops.create')">
+                            <Link :href="workshop_create">
                                 <Plus />
                                 Új workshop hozzáadása
                             </Link>
@@ -233,7 +226,8 @@ function statusLocalization(
                             size="lg"
                             class="h-14"
                             variant="secondary"
-                            ><Link :href="route('instructor.sessions.create')">
+                        >
+                            <Link :href="session_create">
                                 <Plus />
                                 Új időpont hozzáadása
                             </Link>

@@ -85,7 +85,7 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                     <!-- Admin links -->
                     <template v-if="isAdmin">
                         <Link
-                            href="/admin"
+                            :href="route('admin.users')"
                             class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
                         >
                             Admin
@@ -186,7 +186,7 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                 <!-- Admin links -->
                 <template v-if="isAdmin">
                     <Link
-                        href="/admin"
+                        :href="route('admin.users')"
                         class="border-b border-gray-200 py-2"
                         @click="toggleMobileMenu"
                     >

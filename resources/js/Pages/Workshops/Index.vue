@@ -13,7 +13,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { ArrowDown } from 'lucide-vue-next';
 import { motion } from 'motion-v';
 
-defineProps<{
+const props = defineProps<{
     workshops: Array<{
         id: number;
         name: string;
@@ -35,7 +35,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Workshop" />
+    <Head title="Főoldal" />
 
     <AppLayout>
         <div class="text-black">
@@ -59,6 +59,7 @@ defineProps<{
 
                 <div
                     class="absolute bottom-16 left-4 right-4 z-10 sm:bottom-20 sm:left-8 sm:right-8 md:bottom-24 md:left-20 md:right-auto md:max-w-4xl"
+                    vv
                 >
                     <motion.div
                         class="overflow-hidden p-2 font-bold text-white"

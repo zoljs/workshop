@@ -4,7 +4,8 @@ import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import { Separator } from '@/Components/ui/separator';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { goBack } from '@/lib/utils';
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Check, Trash2 } from 'lucide-vue-next';
 
 const props = defineProps<{
@@ -15,6 +16,9 @@ const props = defineProps<{
         booked_count: number;
         workshop: { id: number; name: string };
     };
+    update_url: string;
+    cancel_url: string;
+    instructor?: { id: number; name: string };
 }>();
 
 function toDatetimeLocal(d: string) {
@@ -29,7 +33,8 @@ function cancelSession() {
             'Törlöd ezt az időpontot? Az összes foglalás lemondottként lesz jelölve.',
         )
     ) {
-        router.patch(route('instructor.sessions.cancel', props.session.id));
+        //router.patch(route('instructor.sessions.cancel', props.session.id));
+        router.patch(props.cancel_url);
     }
 }
 
@@ -46,11 +51,9 @@ const form = useForm({
             class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-8 bg-background px-4 pb-40 pt-20 sm:px-6 md:pt-32 lg:grid-cols-[1fr_0.4fr] lg:px-8"
         >
             <section class="flex flex-col gap-8">
-                <Button as-child variant="ghost" size="lg" class="w-24">
-                    <Link :href="route('instructor.workshops.index')">
-                        <ArrowLeft />
-                        Vissza
-                    </Link>
+                <Button @click="goBack" variant="ghost" size="lg" class="w-24">
+                    <ArrowLeft />
+                    Vissza
                 </Button>
 
                 <header class="flex flex-col gap-1">
@@ -68,11 +71,7 @@ const form = useForm({
 
                 <form
                     id="session-edit-form"
-                    @submit.prevent="
-                        form.patch(
-                            route('instructor.sessions.update', session.id),
-                        )
-                    "
+                    @submit.prevent="form.patch(props.update_url)"
                     class="flex flex-col gap-4"
                 >
                     <div>

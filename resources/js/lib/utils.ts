@@ -25,3 +25,7 @@ export function valueUpdater<T extends Updater<any>>(
 export function diffForHumans(d: string) {
     return dayjs(d).format('YYYY. MM. DD. HH:mm');
 }
+
+export function goBack() {
+    window.history.back();
+}

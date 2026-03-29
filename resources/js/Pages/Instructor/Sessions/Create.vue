@@ -11,7 +11,8 @@ import {
 } from '@/Components/ui/select';
 import { Separator } from '@/Components/ui/separator';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { goBack } from '@/lib/utils';
+import { Head, useForm } from '@inertiajs/vue3';
 import { ArrowLeft, Check } from 'lucide-vue-next';
 
 defineProps<{
@@ -32,11 +33,9 @@ const form = useForm({
             class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-8 bg-background px-4 pb-40 pt-20 sm:px-6 md:pt-32 lg:grid-cols-[1fr_0.4fr] lg:px-8"
         >
             <section class="flex flex-col gap-8">
-                <Button as-child variant="ghost" size="lg" class="w-24">
-                    <Link :href="route('instructor.workshops.index')">
-                        <ArrowLeft />
-                        Vissza
-                    </Link>
+                <Button @click="goBack" variant="ghost" size="lg" class="w-24">
+                    <ArrowLeft />
+                    Vissza
                 </Button>
 
                 <header>

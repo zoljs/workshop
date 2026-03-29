@@ -6,7 +6,8 @@ import { Separator } from '@/Components/ui/separator';
 import { Textarea } from '@/Components/ui/textarea';
 import WorkshopCard from '@/Components/WorkshopCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { goBack } from '@/lib/utils';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { ArrowLeft, Check, Trash2 } from 'lucide-vue-next';
 import { computed } from 'vue';
 
@@ -28,6 +29,9 @@ const props = defineProps<{
             bookings_sum_headcount: number | null;
         }>;
     };
+    update_url: string;
+    archive_url: string;
+    instructor?: { id: number; name: string };
 }>();
 
 const form = useForm({
@@ -39,7 +43,8 @@ const form = useForm({
 
 function archive() {
     if (confirm('Workshop archiválása?')) {
-        router.patch(route('instructor.workshops.archive', props.workshop.id));
+        // router.patch(route('instructor.workshops.archive', props.workshop.id));
+        router.patch(props.archive_url);
     }
 }
 
@@ -55,17 +60,15 @@ const preview = computed(() => ({
 </script>
 
 <template>
-    <Head title="Edit Workshop" />
+    <Head title="Workshop Szerkesztése" />
     <AppLayout>
         <div
             class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-8 bg-background px-4 pb-40 pt-20 sm:px-6 md:pt-32 lg:grid-cols-[1fr_0.4fr] lg:px-8"
         >
             <section class="flex flex-col gap-8">
-                <Button as-child variant="ghost" size="lg" class="w-24">
-                    <Link :href="route('instructor.workshops.index')">
-                        <ArrowLeft />
-                        Vissza
-                    </Link>
+                <Button @click="goBack" variant="ghost" size="lg" class="w-24">
+                    <ArrowLeft />
+                    Vissza
                 </Button>
 
                 <!-- Header -->
@@ -83,11 +86,7 @@ const preview = computed(() => ({
 
                 <form
                     id="workshop-edit-form"
-                    @submit.prevent="
-                        form.patch(
-                            route('instructor.workshops.update', workshop.id),
-                        )
-                    "
+                    @submit.prevent="form.patch(props.update_url)"
                     class="flex flex-col gap-4"
                 >
                     <div>

@@ -1,5 +1,6 @@
 <?php
 
+    use App\Http\Controllers\AdminController;
     use App\Http\Controllers\BookingController;
     use App\Http\Controllers\DashboardController;
     use App\Http\Controllers\ProfileController;
@@ -64,6 +65,25 @@
             Route::patch('/sessions/{session}/cancel', [InstructorController::class, 'cancelSession'])->name('sessions.cancel');
         });
 
+        // Admin routes
+        Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+
+            Route::get('/users', [AdminController::class, 'users'])->name('users');
+
+            Route::get('/instructors/{instructor}/workshops', [AdminController::class, 'instructorWorkshops'])->name('instructor.workshops');
+            Route::get('/instructors/{instructor}/workshops/create', [AdminController::class, 'createWorkshop'])->name('instructor.workshops.create');
+            Route::post('/instructors/{instructor}/workshops', [AdminController::class, 'storeWorkshop'])->name('instructor.workshops.store');
+            Route::get('/instructors/{instructor}/workshops/{workshop}/edit', [AdminController::class, 'editWorkshop'])->name('instructor.workshops.edit');
+            Route::patch('/instructors/{instructor}/workshops/{workshop}', [AdminController::class, 'updateWorkshop'])->name('instructor.workshops.update');
+            Route::patch('/instructors/{instructor}/workshops/{workshop}/archive', [AdminController::class, 'archiveWorkshop'])->name('instructor.workshops.archive');
+
+            Route::get('/instructors/{instructor}/sessions/create', [AdminController::class, 'createSession'])->name('instructor.sessions.create');
+            Route::post('/instructors/{instructor}/sessions', [AdminController::class, 'storeSession'])->name('instructor.sessions.store');
+            Route::get('/instructors/{instructor}/sessions/{session}/edit', [AdminController::class, 'editSession'])->name('instructor.sessions.edit');
+            Route::patch('/instructors/{instructor}/sessions/{session}', [AdminController::class, 'updateSession'])->name('instructor.sessions.update');
+            Route::patch('/instructors/{instructor}/sessions/{session}/cancel', [AdminController::class, 'cancelSession'])->name('instructor.sessions.cancel');
+
+        });
     });
 
     require __DIR__.'/auth.php';

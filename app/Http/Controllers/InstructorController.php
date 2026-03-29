@@ -22,10 +22,28 @@ class InstructorController extends Controller
                 ->orderBy('starts_at');
             }])
             ->orderByDesc('created_at')
-            ->get();
+            ->get()
+            // Map URLs based on the controller to the index page, and let web.php handle the rest
+            ->map(function ($workshop) {
+                // Workshops
+                $workshop->edit_url    = route('instructor.workshops.edit', $workshop);
+                $workshop->archive_url = route('instructor.workshops.archive', $workshop);
 
+                // Sessions
+                $workshop->sessions->transform(function ($session) {
+                    $session->edit_url = route('instructor.sessions.edit', $session);
+                    $session->cancel_url = route('instructor.sessions.cancel', $session);
+                    return $session;
+                });
+                return $workshop;
+            });
+
+        // Pass props
         return Inertia::render('Instructor/Workshops/Index', [
             'workshops' => $workshops,
+            // URLs
+            'workshop_create' => route('instructor.workshops.create'),
+            'session_create'  => route('instructor.sessions.create'),
         ]);
     }
 
@@ -67,6 +85,9 @@ class InstructorController extends Controller
 
         return Inertia::render('Instructor/Workshops/Edit', [
             'workshop' => $workshop,
+            // Pass URLs as well so web.php can handle the rest
+            'update_url'  => route('instructor.workshops.update', $workshop),
+            'archive_url' => route('instructor.workshops.archive', $workshop),
         ]);
     }
 
@@ -155,6 +176,9 @@ class InstructorController extends Controller
                     'name' => $session->workshop->name,
                 ],
             ],
+            // Pass URLs as well so web.php can handle the rest
+            'update_url' => route('instructor.sessions.update', $session),
+            'cancel_url' => route('instructor.sessions.cancel', $session),
         ]);
     }
 
