@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import LoyaltySection from '@/Components/LoyaltySection.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Button } from '@/Components/ui/button';
 import WorkshopCard from '@/Components/WorkshopCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
