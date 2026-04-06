@@ -13,6 +13,7 @@ class WorkshopController extends Controller
         $workshops = Workshop::with(['sessions' => function ($query) {
             $query->where('starts_at', '>', now())
                 // withCount should be withSum, otherwise it just counts all entries and doesnt sum at all
+                ->where('status', 'active')
                 ->withSum('bookings', 'headcount')
                 ->orderBy('starts_at');
         }, 'instructor'])

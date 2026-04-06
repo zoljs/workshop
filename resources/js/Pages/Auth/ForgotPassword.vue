@@ -1,9 +1,8 @@
 <script setup lang="ts">
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 defineProps<{
@@ -13,54 +12,61 @@ defineProps<{
 const form = useForm({
     email: '',
 });
-
-const submit = () => {
-    form.post(route('password.email'));
-};
 </script>
 
 <template>
     <GuestLayout>
-        <Head title="Forgot Password" />
+        <Head title="Elfelejtett jelszó" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email
-            address and we will email you a password reset link that will allow
-            you to choose a new one.
-        </div>
-
-        <div
-            v-if="status"
-            class="mb-4 text-sm font-medium text-green-600"
-        >
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
+        <div class="space-y-6">
             <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+                <h1 class="text-2xl font-bold tracking-tight text-primary">
+                    Elfelejtett jelszó
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    Add meg az email címedet és küldünk egy jelszó-visszaállító
+                    linket.
+                </p>
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
-                <PrimaryButton
-                    :class="{ 'opacity-25': form.processing }"
+            <p v-if="status" class="text-sm font-medium text-green-600">
+                {{ status }}
+            </p>
+
+            <form
+                @submit.prevent="form.post(route('password.email'))"
+                class="space-y-4"
+            >
+                <div class="space-y-2">
+                    <Label for="email">Email</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        v-model="form.email"
+                        required
+                        autofocus
+                        autocomplete="username"
+                    />
+                    <p
+                        v-if="form.errors.email"
+                        class="text-sm text-destructive"
+                    >
+                        {{ form.errors.email }}
+                    </p>
+                </div>
+
+                <Button
+                    type="submit"
+                    class="w-full"
                     :disabled="form.processing"
                 >
-                    Email Password Reset Link
-                </PrimaryButton>
-            </div>
-        </form>
+                    {{
+                        form.processing
+                            ? 'Küldés...'
+                            : 'Visszaállító link küldése'
+                    }}
+                </Button>
+            </form>
+        </div>
     </GuestLayout>
 </template>

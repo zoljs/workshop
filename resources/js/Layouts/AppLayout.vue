@@ -20,7 +20,7 @@ const isAdmin = computed(() => roles.value.includes('admin'));
     <div class="relative min-h-screen bg-background">
         <!-- Nav -->
         <nav
-            class="fixed left-0 top-0 z-50 h-24 w-full px-6 text-black transition-colors duration-300"
+            class="fixed left-0 top-0 z-50 h-24 w-full bg-white/40 px-6 text-black backdrop-blur-lg transition-colors duration-300"
             :class="isMobileMenuOpen ? 'bg-white/90 backdrop-blur-xl' : ''"
         >
             <div
@@ -41,17 +41,17 @@ const isAdmin = computed(() => roles.value.includes('admin'));
 
                 <!-- Center pill nav -->
                 <div
-                    class="hidden h-16 w-fit items-center justify-center gap-2 rounded-full bg-white/40 px-2 backdrop-blur-lg md:flex"
+                    class="hidden h-16 w-fit items-center justify-center gap-2 rounded-full px-2 md:flex"
                 >
                     <Link
                         href="/"
-                        class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                        class="flex items-center justify-center rounded-full p-2 text-base tracking-wider transition-colors hover:bg-white/30"
                     >
                         Főoldal
                     </Link>
                     <Link
                         href="/#workshops"
-                        class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                        class="flex items-center justify-center rounded-[2rem] p-2 text-base tracking-wider transition-colors hover:bg-white/30"
                     >
                         Workshopok
                     </Link>
@@ -60,13 +60,13 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                     <template v-if="user">
                         <Link
                             :href="route('dashboard')"
-                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                            class="flex items-center justify-center rounded-[2rem] p-2 text-base tracking-wider transition-colors hover:bg-white/30"
                         >
                             Irányítópult
                         </Link>
                         <Link
                             :href="route('dashboard.bookings')"
-                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                            class="flex items-center justify-center rounded-[2rem] p-2 text-base tracking-wider transition-colors hover:bg-white/30"
                         >
                             Foglalásaim
                         </Link>
@@ -76,7 +76,7 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                     <template v-if="isInstructor">
                         <Link
                             :href="route('instructor.workshops.index')"
-                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                            class="flex items-center justify-center rounded-[2rem] p-2 text-base tracking-wider transition-colors hover:bg-white/30"
                         >
                             Workshopjaim
                         </Link>
@@ -86,7 +86,7 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                     <template v-if="isAdmin">
                         <Link
                             :href="route('admin.users')"
-                            class="flex items-center justify-center rounded-full p-3 text-base tracking-wider transition-colors hover:bg-white/30"
+                            class="flex items-center justify-center rounded-[2rem] p-2 text-base tracking-wider transition-colors hover:bg-white/30"
                         >
                             Admin
                         </Link>
@@ -126,9 +126,28 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                     :aria-expanded="isMobileMenuOpen"
                     @click="toggleMobileMenu"
                 >
-                    <span class="text-xl">{{
-                        isMobileMenuOpen ? '✕' : '☰'
-                    }}</span>
+                    <span
+                        class="flex flex-col items-center justify-center gap-1"
+                    >
+                        <span
+                            :class="{
+                                'translate-y-1.5 rotate-45': isMobileMenuOpen,
+                            }"
+                            class="h-0.5 w-4 bg-primary transition-all duration-300"
+                        />
+                        <span
+                            :class="{
+                                '-translate-x-1.5 scale-x-0': isMobileMenuOpen,
+                            }"
+                            class="h-0.5 w-4 bg-primary transition-all duration-300"
+                        />
+                        <span
+                            :class="{
+                                '-translate-y-1.5 -rotate-45': isMobileMenuOpen,
+                            }"
+                            class="h-0.5 w-4 bg-primary transition-all duration-300"
+                        />
+                    </span>
                 </button>
             </div>
         </nav>

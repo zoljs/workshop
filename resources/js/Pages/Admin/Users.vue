@@ -75,7 +75,7 @@ const regularUsers = props.users.filter((u) => !u.roles.includes('instructor'));
                     <h2 class="text-2xl font-bold">Óraadók</h2>
                 </div>
 
-                <Card>
+                <Card class="overflow-hidden">
                     <Table v-if="instructors.length > 0">
                         <TableHeader>
                             <TableRow>
@@ -144,7 +144,7 @@ const regularUsers = props.users.filter((u) => !u.roles.includes('instructor'));
             <div class="space-y-4">
                 <h2 class="text-2xl font-bold">Felhasználók</h2>
 
-                <Card>
+                <Card class="overflow-hidden">
                     <Table v-if="regularUsers.length > 0">
                         <TableHeader>
                             <TableRow>

@@ -28,75 +28,89 @@ const submit = () => {
     <GuestLayout>
         <Head title="Bejelentkezés" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
+        <div class="space-y-6">
+            <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+                {{ status }}
+            </div>
 
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-zinc-900">Bejelentkezés</h1>
-            <p class="mt-1 text-sm text-zinc-500">
-                Add meg az adataidat a folytatáshoz.
-            </p>
-        </div>
-
-        <form @submit.prevent="submit" class="space-y-4">
-            <div class="space-y-1.5">
-                <Label for="email">Email</Label>
-                <Input
-                    id="email"
-                    type="email"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <p v-if="form.errors.email" class="text-md text-destructive">
-                    {{ form.errors.email }}
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-primary">
+                    Bejelentkezés
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    Add meg az adataidat a folytatáshoz.
                 </p>
             </div>
 
-            <div class="space-y-1.5">
-                <div class="flex items-center justify-between">
-                    <Label for="password">Jelszó</Label>
-                    <Link
-                        v-if="canResetPassword"
-                        :href="route('password.request')"
-                        class="text-sm text-zinc-500 underline hover:text-zinc-800"
+            <form @submit.prevent="submit" class="space-y-4">
+                <div class="space-y-1.5">
+                    <Label for="email">Email</Label>
+                    <Input
+                        id="email"
+                        type="email"
+                        v-model="form.email"
+                        required
+                        autofocus
+                        autocomplete="username"
+                    />
+                    <p
+                        v-if="form.errors.email"
+                        class="text-md text-destructive"
                     >
-                        Elfelejtett jelszó?
-                    </Link>
+                        {{ form.errors.email }}
+                    </p>
                 </div>
-                <Input
-                    id="password"
-                    type="password"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                />
-                <p v-if="form.errors.password" class="text-md text-destructive">
-                    {{ form.errors.password }}
+
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <Label for="password">Jelszó</Label>
+                        <Link
+                            v-if="canResetPassword"
+                            :href="route('password.request')"
+                            class="text-sm text-zinc-500 underline hover:text-zinc-800"
+                        >
+                            Elfelejtett jelszó?
+                        </Link>
+                    </div>
+                    <Input
+                        id="password"
+                        type="password"
+                        v-model="form.password"
+                        required
+                        autocomplete="current-password"
+                    />
+                    <p
+                        v-if="form.errors.password"
+                        class="text-md text-destructive"
+                    >
+                        {{ form.errors.password }}
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <Checkbox id="remember" v-model:checked="form.remember" />
+                    <Label for="remember" class="font-normal text-zinc-600"
+                        >Emlékezz rám</Label
+                    >
+                </div>
+
+                <Button
+                    type="submit"
+                    class="w-full"
+                    :disabled="form.processing"
+                >
+                    {{ form.processing ? 'Bejelentkezés...' : 'Bejelentkezés' }}
+                </Button>
+
+                <p class="text-center text-sm text-zinc-500">
+                    Még nincs fiókod?
+                    <Link
+                        :href="route('register')"
+                        class="underline hover:text-zinc-800"
+                        >Regisztráció</Link
+                    >
                 </p>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <Checkbox id="remember" v-model:checked="form.remember" />
-                <Label for="remember" class="font-normal text-zinc-600"
-                    >Emlékezz rám</Label
-                >
-            </div>
-
-            <Button type="submit" class="w-full" :disabled="form.processing">
-                {{ form.processing ? 'Bejelentkezés...' : 'Bejelentkezés' }}
-            </Button>
-
-            <p class="text-center text-sm text-zinc-500">
-                Még nincs fiókod?
-                <Link
-                    :href="route('register')"
-                    class="underline hover:text-zinc-800"
-                    >Regisztráció</Link
-                >
-            </p>
-        </form>
+            </form>
+        </div>
     </GuestLayout>
 </template>
