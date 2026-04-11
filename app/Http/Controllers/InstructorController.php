@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
 use App\Models\Workshop;
 use App\Models\WorkshopSession;
 use Illuminate\Http\RedirectResponse;
@@ -44,13 +43,16 @@ class InstructorController extends Controller
             // URLs
             'workshop_create' => route('instructor.workshops.create'),
             'session_create'  => route('instructor.sessions.create'),
+            'session_store_url'  => route('instructor.sessions.store'),
         ]);
     }
 
     // Render create workshop form
     public function createWorkshop(): Response
     {
-        return Inertia::render('Instructor/Workshops/Create');
+        return Inertia::render('Instructor/Workshops/Create', [
+            'store_url'  => route('instructor.workshops.store'),
+        ]);
     }
 
     // Validate and store the new workshop, then redirect to the workshop list
@@ -114,7 +116,17 @@ class InstructorController extends Controller
     {
         $this->authorizeWorkshop($workshop);
 
-        $workshop->update(['archived' => true]);
+        // Cancel all of it's sessions in a transaction safely
+        \DB::transaction(function () use ($workshop) {
+            $workshop->sessions()
+                ->where('status', '!=', 'cancelled')
+                ->each(function ($session) {
+                    $session->bookings()->update(['status' => 'cancelled_by_instructor']);
+                    $session->update(['status' => 'cancelled']);
+                });
+
+            $workshop->update(['archived' => true]);
+        });
 
         return redirect()->route('instructor.workshops.index')
             ->with('success', 'Workshop archived.');
@@ -133,6 +145,7 @@ class InstructorController extends Controller
 
         return Inertia::render('Instructor/Sessions/Create', [
             'workshops' => $workshops,
+            'store_url'  => route('instructor.sessions.store'),
         ]);
     }
 

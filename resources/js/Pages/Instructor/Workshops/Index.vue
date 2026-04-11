@@ -2,6 +2,7 @@
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader } from '@/Components/ui/card';
+import { Input } from '@/Components/ui/input';
 import { Separator } from '@/Components/ui/separator';
 import {
     Table,
@@ -13,8 +14,9 @@ import {
 } from '@/Components/ui/table';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { diffForHumans } from '@/lib/utils';
-import { Head, Link } from '@inertiajs/vue3';
-import { Pencil, Plus, Sparkles } from 'lucide-vue-next';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { Check, Pencil, Plus, Sparkles, X } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
     workshops: Array<{
@@ -39,7 +41,16 @@ const props = defineProps<{
         id: number;
         name: string;
     };
+    session_store_url: string;
 }>();
+
+const activeWorkshopsCount = computed(
+    () => props.workshops.filter((workshop) => !workshop.archived).length,
+);
+
+const archivedWorkshopsCount = computed(
+    () => props.workshops.filter((workshop) => workshop.archived).length,
+);
 
 function statusVariant(
     status?: string,
@@ -65,6 +76,38 @@ function statusLocalization(
         default:
             return '-';
     }
+}
+
+// Session UI
+const openSessionForm = ref<number | null>(null);
+const newSession = ref({ starts_at: '', max_capacity: 10 });
+
+function toggleSessionForm(workshopId: number) {
+    if (openSessionForm.value === workshopId) {
+        openSessionForm.value = null;
+    } else {
+        openSessionForm.value = workshopId;
+        newSession.value = { starts_at: '', max_capacity: 10 };
+    }
+}
+
+function submitSession(workshopId: number) {
+    router.post(
+        props.session_store_url,
+        {
+            workshop_id: workshopId,
+            starts_at: newSession.value.starts_at,
+            max_capacity: newSession.value.max_capacity,
+        },
+        {
+            // Intertia does a full page load so we have to preserve scroll, otherwise it looks dumb
+            preserveScroll: true,
+            onSuccess: () => {
+                openSessionForm.value = null;
+                newSession.value = { starts_at: '', max_capacity: 10 };
+            },
+        },
+    );
 }
 </script>
 
@@ -101,6 +144,17 @@ function statusLocalization(
 
                         <Separator />
 
+                        <Button
+                            as-child
+                            size="lg"
+                            class="inline-flex h-20 lg:hidden"
+                        >
+                            <Link :href="workshop_create">
+                                <Plus />
+                                Új workshop hozzáadása
+                            </Link>
+                        </Button>
+
                         <div
                             v-for="workshop in workshops"
                             :key="workshop.id"
@@ -116,7 +170,10 @@ function statusLocalization(
                                     }}
                                 </h2>
 
-                                <div class="flex flex-row gap-2">
+                                <div
+                                    v-if="!workshop.archived"
+                                    class="flex flex-row"
+                                >
                                     <Button as-child variant="ghost" size="lg">
                                         <Link :href="workshop.edit_url"
                                             >Szerkesztés</Link
@@ -128,19 +185,16 @@ function statusLocalization(
                             <Card class="overflow-hidden">
                                 <Table>
                                     <TableHeader>
-                                        <TableHead class="w-2/5"
+                                        <TableHead class="w-2/4"
                                             >Dátum</TableHead
                                         >
-                                        <TableHead class="w-16"
-                                            >Kapacitás</TableHead
-                                        >
-                                        <TableHead class="w-16"
-                                            >Foglalt</TableHead
+                                        <TableHead class="w-1/5"
+                                            >Helyek</TableHead
                                         >
                                         <TableHead class="w-1/5"
                                             >Státusz</TableHead
                                         >
-                                        <TableHead class="w-16" />
+                                        <TableHead class="w-1/5" />
                                     </TableHeader>
                                     <TableBody
                                         v-if="workshop.sessions.length > 0"
@@ -152,15 +206,13 @@ function statusLocalization(
                                             <TableCell>{{
                                                 diffForHumans(session.starts_at)
                                             }}</TableCell>
-                                            <TableCell>{{
-                                                session.max_capacity
-                                            }}</TableCell>
-                                            <TableCell>
+                                            <TableCell
+                                                >{{ session.max_capacity }} /
                                                 {{
                                                     session.bookings_sum_headcount ??
                                                     0
-                                                }}
-                                            </TableCell>
+                                                }}</TableCell
+                                            >
                                             <TableCell>
                                                 <Badge
                                                     :variant="
@@ -181,7 +233,7 @@ function statusLocalization(
                                             >
                                                 <Button
                                                     as-child
-                                                    variant="outline"
+                                                    variant="ghost"
                                                     size="sm"
                                                     v-if="
                                                         session.status !==
@@ -192,6 +244,91 @@ function statusLocalization(
                                                         :href="session.edit_url"
                                                         ><Pencil
                                                     /></Link>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+
+                                        <!-- New entry -->
+                                        <TableRow
+                                            v-if="
+                                                openSessionForm === workshop.id
+                                            "
+                                        >
+                                            <TableCell :colSpan="5">
+                                                <div
+                                                    class="grid grid-cols-[2fr_1fr] gap-4 md:grid-cols-[2fr_1fr_2fr]"
+                                                >
+                                                    <Input
+                                                        type="datetime-local"
+                                                        v-model="
+                                                            newSession.starts_at
+                                                        "
+                                                    />
+                                                    <Input
+                                                        type="number"
+                                                        v-model="
+                                                            newSession.max_capacity
+                                                        "
+                                                        min="1"
+                                                        max="100"
+                                                    />
+                                                    <div
+                                                        class="col-span-2 flex flex-row items-center justify-center gap-2 md:col-span-1 md:justify-end"
+                                                    >
+                                                        <Button
+                                                            class="w-full md:w-min"
+                                                            size="sm"
+                                                            @click="
+                                                                submitSession(
+                                                                    workshop.id,
+                                                                )
+                                                            "
+                                                        >
+                                                            <Check />
+                                                        </Button>
+                                                        <Button
+                                                            class="w-full md:w-min"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            @click="
+                                                                toggleSessionForm(
+                                                                    workshop.id,
+                                                                )
+                                                            "
+                                                        >
+                                                            <X />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+
+                                        <!-- New entry initiator -->
+                                        <TableRow
+                                            v-if="
+                                                openSessionForm !==
+                                                    workshop.id &&
+                                                !workshop.archived
+                                            "
+                                        >
+                                            <TableCell :colSpan="5">
+                                                <Button
+                                                    class="w-full"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    @click="
+                                                        toggleSessionForm(
+                                                            workshop.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <Plus />
+                                                    {{
+                                                        openSessionForm ===
+                                                        workshop.id
+                                                            ? 'Mégsem'
+                                                            : 'Új időpont hozzáadása'
+                                                    }}
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -215,21 +352,14 @@ function statusLocalization(
                     <aside
                         class="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start"
                     >
-                        <Button as-child size="lg" class="h-20">
-                            <Link :href="workshop_create">
-                                <Plus />
-                                Új workshop hozzáadása
-                            </Link>
-                        </Button>
                         <Button
                             as-child
                             size="lg"
-                            class="h-14"
-                            variant="secondary"
+                            class="hidden h-20 lg:inline-flex"
                         >
-                            <Link :href="session_create">
+                            <Link :href="workshop_create">
                                 <Plus />
-                                Új időpont hozzáadása
+                                Új workshop hozzáadása
                             </Link>
                         </Button>
 
@@ -242,7 +372,7 @@ function statusLocalization(
                                     <span
                                         class="text-xl font-bold uppercase tracking-widest opacity-80"
                                     >
-                                        Workshopjaid
+                                        Workshopok
                                     </span>
                                     <Sparkles />
                                 </div>
@@ -255,7 +385,20 @@ function statusLocalization(
                                     <p
                                         class="text-4xl font-extrabold text-orange-200"
                                     >
-                                        {{ workshops.length }} db
+                                        {{ activeWorkshopsCount }} db
+                                    </p>
+                                </div>
+                            </CardContent>
+
+                            <CardContent class="space-y-4">
+                                <div>
+                                    <p class="mb-1 text-base opacity-70">
+                                        Archivált
+                                    </p>
+                                    <p
+                                        class="text-4xl font-extrabold text-orange-200"
+                                    >
+                                        {{ archivedWorkshopsCount }} db
                                     </p>
                                 </div>
                             </CardContent>

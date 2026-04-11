@@ -17,6 +17,7 @@ import { ArrowLeft, Check } from 'lucide-vue-next';
 
 defineProps<{
     workshops: Array<{ id: number; name: string }>;
+    store_url: string;
 }>();
 
 const form = useForm({
@@ -50,9 +51,7 @@ const form = useForm({
 
                 <form
                     id="session-create-form"
-                    @submit.prevent="
-                        form.post(route('instructor.sessions.store'))
-                    "
+                    @submit.prevent="form.post(store_url)"
                     class="flex flex-col gap-4"
                 >
                     <div>

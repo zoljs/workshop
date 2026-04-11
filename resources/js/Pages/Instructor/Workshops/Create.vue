@@ -13,6 +13,14 @@ import { computed } from 'vue';
 
 const auth = usePage().props.auth;
 
+const props = defineProps<{
+    instructor?: {
+        id: number;
+        name: string;
+    };
+    store_url: string;
+}>();
+
 const form = useForm({
     name: '',
     description: '',
@@ -26,7 +34,7 @@ const preview = computed(() => ({
     description: form.description || 'Leírás...',
     duration_minutes: form.duration_minutes,
     price_per_person: form.price_per_person,
-    instructor: { name: auth.user.name ?? 'Név' },
+    instructor: { name: props.instructor?.name ?? 'Név' },
     sessions: [],
 }));
 </script>
@@ -57,9 +65,7 @@ const preview = computed(() => ({
 
                 <form
                     id="workshop-create-form"
-                    @submit.prevent="
-                        form.post(route('instructor.workshops.store'))
-                    "
+                    @submit.prevent="form.post(store_url)"
                     class="flex flex-col gap-4"
                 >
                     <div>

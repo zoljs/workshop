@@ -64,6 +64,7 @@
                 'workshop_create' => route('admin.instructor.workshops.create', $instructor),
                 'session_create'  => route('admin.instructor.sessions.create', $instructor),
                 'instructor'      => ['id' => $instructor->id, 'name' => $instructor->name],
+                'session_store_url'  => route('admin.instructor.sessions.store', $instructor),
             ]);
         }
 
@@ -73,6 +74,7 @@
 
             return Inertia::render('Instructor/Workshops/Create', [
                 'instructor' => ['id' => $instructor->id, 'name' => $instructor->name],
+                'store_url'  => route('admin.instructor.workshops.store', $instructor),
             ]);
         }
 
@@ -158,6 +160,7 @@
             return Inertia::render('Instructor/Sessions/Create', [
                 'workshops'  => $workshops,
                 'instructor' => ['id' => $instructor->id, 'name' => $instructor->name],
+                'store_url'  => route('admin.instructor.sessions.store', $instructor),
             ]);
         }
 

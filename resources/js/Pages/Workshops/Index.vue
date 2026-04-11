@@ -93,9 +93,13 @@ const props = defineProps<{
                             :variants="slideVariants"
                             class="flex w-full flex-col gap-3 sm:w-auto sm:flex-row md:gap-4"
                         >
-                            <Button size="lg"> Időpontot foglalok </Button>
+                            <Button size="lg">
+                                <Link href="#workshops">
+                                    Időpontot foglalok
+                                </Link>
+                            </Button>
                             <Button size="lg" variant="secondary">
-                                Részletek
+                                <Link href="#loyalty"> Részletek </Link>
                             </Button>
                         </motion.div>
                     </motion.div>
@@ -149,7 +153,9 @@ const props = defineProps<{
                 </div>
             </section>
 
-            <LoyaltySection />
+            <section id="loyalty" class="py-24">
+                <LoyaltySection />
+            </section>
         </div>
     </AppLayout>
 </template>
