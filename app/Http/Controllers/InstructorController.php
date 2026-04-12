@@ -30,7 +30,8 @@ class InstructorController extends Controller
 
                 // Sessions
                 $workshop->sessions->transform(function ($session) {
-                    $session->edit_url = route('instructor.sessions.edit', $session);
+                    //$session->edit_url = route('instructor.sessions.edit', $session);
+                    $session->update_url = route('instructor.sessions.update', $session);
                     $session->cancel_url = route('instructor.sessions.cancel', $session);
                     return $session;
                 });

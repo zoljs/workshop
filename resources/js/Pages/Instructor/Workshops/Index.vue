@@ -31,7 +31,7 @@ const props = defineProps<{
             max_capacity: number;
             status: string;
             bookings_sum_headcount: number | null;
-            edit_url: string;
+            update_url: string;
             cancel_url: string;
         }>;
     }>;
@@ -105,6 +105,51 @@ function submitSession(workshopId: number) {
             onSuccess: () => {
                 openSessionForm.value = null;
                 newSession.value = { starts_at: '', max_capacity: 10 };
+            },
+        },
+    );
+}
+
+// Session Edit UI
+const editingSessionId = ref<number | null>(null);
+const editSession = ref({ starts_at: '', max_capacity: 10 });
+
+function toDatetimeLocal(d: string) {
+    const date = new Date(d);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function startEditSession(session: {
+    id: number;
+    starts_at: string;
+    max_capacity: number;
+}) {
+    // Copy values of the desired session to the edit variables
+    editingSessionId.value = session.id;
+    editSession.value = {
+        starts_at: toDatetimeLocal(session.starts_at),
+        max_capacity: session.max_capacity,
+    };
+}
+
+function cancelEditSession() {
+    editingSessionId.value = null;
+}
+
+function submitEditSession(updateUrl: string) {
+    console.log(updateUrl);
+    router.patch(
+        updateUrl,
+        {
+            starts_at: editSession.value.starts_at,
+            max_capacity: editSession.value.max_capacity,
+        },
+        {
+            // Intertia does a full page load so we have to preserve scroll, otherwise it looks dumb
+            preserveScroll: true,
+            onSuccess: () => {
+                editingSessionId.value = null;
             },
         },
     );
@@ -203,49 +248,109 @@ function submitSession(workshopId: number) {
                                             v-for="session in workshop.sessions"
                                             :key="session.id"
                                         >
-                                            <TableCell>{{
-                                                diffForHumans(session.starts_at)
-                                            }}</TableCell>
-                                            <TableCell
-                                                >{{ session.max_capacity }} /
-                                                {{
-                                                    session.bookings_sum_headcount ??
-                                                    0
-                                                }}</TableCell
+                                            <!-- Display mode -->
+                                            <template
+                                                v-if="
+                                                    editingSessionId !==
+                                                    session.id
+                                                "
                                             >
-                                            <TableCell>
-                                                <Badge
-                                                    :variant="
-                                                        statusVariant(
-                                                            session.status,
-                                                        )
-                                                    "
-                                                >
+                                                <TableCell>{{
+                                                    diffForHumans(
+                                                        session.starts_at,
+                                                    )
+                                                }}</TableCell>
+                                                <TableCell
+                                                    >{{ session.max_capacity }}
+                                                    /
                                                     {{
-                                                        statusLocalization(
-                                                            session.status,
-                                                        )
-                                                    }}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell
-                                                class="flex gap-2 justify-self-end text-right"
-                                            >
-                                                <Button
-                                                    as-child
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    v-if="
-                                                        session.status !==
-                                                        'cancelled'
-                                                    "
+                                                        session.bookings_sum_headcount ??
+                                                        0
+                                                    }}</TableCell
                                                 >
-                                                    <Link
-                                                        :href="session.edit_url"
-                                                        ><Pencil
-                                                    /></Link>
-                                                </Button>
-                                            </TableCell>
+                                                <TableCell>
+                                                    <Badge
+                                                        :variant="
+                                                            statusVariant(
+                                                                session.status,
+                                                            )
+                                                        "
+                                                    >
+                                                        {{
+                                                            statusLocalization(
+                                                                session.status,
+                                                            )
+                                                        }}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell
+                                                    class="flex gap-2 justify-self-end text-right"
+                                                >
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        v-if="
+                                                            session.status !==
+                                                            'cancelled'
+                                                        "
+                                                        @click="
+                                                            startEditSession(
+                                                                session,
+                                                            )
+                                                        "
+                                                        ><Pencil />
+                                                    </Button>
+                                                </TableCell>
+                                            </template>
+
+                                            <!-- Edit mode -->
+                                            <template v-else>
+                                                <TableCell :colSpan="4">
+                                                    <div
+                                                        class="grid grid-cols-[2fr_1fr] gap-4 md:grid-cols-[2fr_1fr_2fr]"
+                                                    >
+                                                        <Input
+                                                            type="datetime-local"
+                                                            v-model="
+                                                                editSession.starts_at
+                                                            "
+                                                        />
+                                                        <Input
+                                                            type="number"
+                                                            v-model="
+                                                                editSession.max_capacity
+                                                            "
+                                                            min="1"
+                                                            max="100"
+                                                        />
+                                                        <div
+                                                            class="col-span-2 flex flex-row items-center justify-center gap-2 md:col-span-1 md:justify-end"
+                                                        >
+                                                            <Button
+                                                                class="w-full md:w-min"
+                                                                size="sm"
+                                                                @click="
+                                                                    submitEditSession(
+                                                                        session.update_url,
+                                                                    )
+                                                                "
+                                                            >
+                                                                <Check />
+                                                            </Button>
+                                                            <Button
+                                                                class="w-full md:w-min"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                @click="
+                                                                    cancelEditSession
+                                                                "
+                                                            >
+                                                                <X />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </TableCell>
+                                            </template>
                                         </TableRow>
 
                                         <!-- New entry -->
@@ -313,7 +418,7 @@ function submitSession(workshopId: number) {
                                         >
                                             <TableCell :colSpan="5">
                                                 <Button
-                                                    class="w-full"
+                                                    class="h-9 w-full"
                                                     variant="ghost"
                                                     size="sm"
                                                     @click="
@@ -333,6 +438,7 @@ function submitSession(workshopId: number) {
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>
+
                                     <TableBody
                                         v-if="workshop.sessions.length <= 0"
                                     >

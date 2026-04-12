@@ -52,7 +52,8 @@
                     $workshop->edit_url    = route('admin.instructor.workshops.edit', [$instructor, $workshop]);
                     $workshop->archive_url = route('admin.instructor.workshops.archive', [$instructor, $workshop]);
                     $workshop->sessions->transform(function ($session) use ($instructor) {
-                        $session->edit_url   = route('admin.instructor.sessions.edit', [$instructor, $session]);
+                        // $session->edit_url   = route('admin.instructor.sessions.edit', [$instructor, $session]);
+                        $session->update_url = route('admin.instructor.sessions.update', [$instructor, $session]);
                         $session->cancel_url = route('admin.instructor.sessions.cancel', [$instructor, $session]);
                         return $session;
                     });
