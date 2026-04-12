@@ -1,14 +1,13 @@
 <script setup lang="ts">
+import PageHeader from '@/Components/PageHeader.vue';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
-import { Separator } from '@/Components/ui/separator';
 import { Textarea } from '@/Components/ui/textarea';
 import WorkshopCard from '@/Components/WorkshopCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { goBack } from '@/lib/utils';
 import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, Check } from 'lucide-vue-next';
+import { Check } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const auth = usePage().props.auth;
@@ -46,22 +45,7 @@ const preview = computed(() => ({
             class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-8 bg-background px-4 pb-40 pt-20 sm:px-6 md:pt-32 lg:grid-cols-[1fr_0.4fr] lg:px-8"
         >
             <section class="flex flex-col gap-8">
-                <Button @click="goBack" variant="ghost" size="lg" class="w-24">
-                    <ArrowLeft />
-                    Vissza
-                </Button>
-
-                <header
-                    class="flex flex-col justify-between gap-4 md:flex-row md:items-end"
-                >
-                    <h1
-                        class="max-w-2xl text-4xl font-bold leading-tight text-primary md:text-6xl"
-                    >
-                        Új workshop
-                    </h1>
-                </header>
-
-                <Separator />
+                <PageHeader title="Új workshop" :hasBack="true" />
 
                 <form
                     id="workshop-create-form"
