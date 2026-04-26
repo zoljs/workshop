@@ -76,7 +76,7 @@ function cancel() {
                         </h1>
                         <Badge
                             variant="default"
-                            class="mb-3 text-xs uppercase tracking-widest"
+                            class="mb-3 flex w-24 items-center justify-center text-center text-xs uppercase tracking-widest"
                         >
                             {{ booking.session.workshop.duration_minutes }} perc
                         </Badge>

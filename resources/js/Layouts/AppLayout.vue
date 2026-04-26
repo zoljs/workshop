@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/Components/ui/button';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 const isMobileMenuOpen = ref(false);
@@ -14,13 +14,17 @@ const roles = computed(() => (page.props.auth.roles ?? []) as string[]);
 
 const isInstructor = computed(() => roles.value.includes('instructor'));
 const isAdmin = computed(() => roles.value.includes('admin'));
+
+const handleLogout = () => {
+    router.post(route('logout'));
+};
 </script>
 
 <template>
     <div class="relative min-h-screen bg-background">
         <!-- Nav -->
         <nav
-            class="fixed left-0 top-0 z-50 h-24 w-full bg-white/40 px-6 text-black backdrop-blur-lg transition-colors duration-300"
+            class="fixed left-0 top-0 z-50 h-16 w-full bg-white/40 px-6 text-black backdrop-blur-lg transition-colors duration-300 md:h-24"
             :class="isMobileMenuOpen ? 'bg-white/90 backdrop-blur-xl' : ''"
         >
             <div
@@ -108,14 +112,12 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                                 user.name
                             }}</Link>
                         </Button>
-                        <Button as-child variant="outline" size="lg">
-                            <Link
-                                :href="route('logout')"
-                                method="post"
-                                as="button"
-                            >
-                                Kijelentkezés
-                            </Link>
+                        <Button
+                            @click="handleLogout"
+                            variant="outline"
+                            size="lg"
+                        >
+                            Kijelentkezés
                         </Button>
                     </template>
                 </div>
@@ -231,10 +233,12 @@ const isAdmin = computed(() => roles.value.includes('admin'));
                             {{ user.name }}
                         </Link>
                     </Button>
-                    <Button as-child variant="outline" class="w-full">
-                        <Link :href="route('logout')" method="post" as="button">
-                            Kijelentkezés
-                        </Link>
+                    <Button
+                        @click="handleLogout"
+                        variant="outline"
+                        class="w-full"
+                    >
+                        Kijelentkezés
                     </Button>
                 </template>
             </div>

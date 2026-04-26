@@ -129,7 +129,7 @@ class BookingController extends Controller
                         'id' => $booking->session->workshop->id,
                         'name' => $booking->session->workshop->name,
                         'price_per_person' => $booking->session->workshop->price_per_person,
-                        'duration_minutes' => $booking->session->workshop->price_per_person,
+                        'duration_minutes' => $booking->session->workshop->duration_minutes,
                     ],
                 ],
             ],
