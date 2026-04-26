@@ -106,38 +106,50 @@ const editModal = ref<InstanceType<typeof EditSessionModal> | null>(null);
                 </TableRow>
             </TableHeader>
 
-            <TableBody v-if="workshop.sessions.length > 0">
-                <TableRow
-                    v-for="session in workshop.sessions"
-                    :key="session.id"
-                >
-                    <TableCell>{{
-                        diffForHumans(session.starts_at)
-                    }}</TableCell>
-                    <TableCell
-                        >{{ session.max_capacity }} /
-                        {{ session.bookings_sum_headcount ?? 0 }}</TableCell
+            <TableBody>
+                <template v-if="workshop.sessions.length > 0">
+                    <TableRow
+                        v-for="session in workshop.sessions"
+                        :key="session.id"
                     >
-                    <TableCell>
-                        <Badge :variant="statusVariant(session.status)">
-                            {{ statusLocalization(session.status) }}
-                        </Badge>
-                    </TableCell>
-                    <TableCell class="flex gap-2 justify-self-end text-right">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            v-if="session.status !== 'cancelled'"
-                            @click="editModal?.openModal(session)"
+                        <TableCell>{{
+                            diffForHumans(session.starts_at)
+                        }}</TableCell>
+                        <TableCell
+                            >{{ session.max_capacity }} /
+                            {{ session.bookings_sum_headcount ?? 0 }}</TableCell
                         >
-                            <Pencil />
-                        </Button>
+                        <TableCell>
+                            <Badge :variant="statusVariant(session.status)">
+                                {{ statusLocalization(session.status) }}
+                            </Badge>
+                        </TableCell>
+                        <TableCell
+                            class="flex gap-2 justify-self-end text-right"
+                        >
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                v-if="session.status !== 'cancelled'"
+                                @click="editModal?.openModal(session)"
+                            >
+                                <Pencil />
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                </template>
+
+                <TableRow v-else>
+                    <TableCell
+                        :colSpan="4"
+                        class="text-center text-muted-foreground"
+                    >
+                        Nincsenek még időpontok.
                     </TableCell>
                 </TableRow>
 
-                <!-- Add session form row -->
                 <TableRow v-if="showAddForm">
-                    <TableCell :colSpan="5">
+                    <TableCell :colSpan="4">
                         <div
                             class="grid grid-cols-[2fr_1fr] gap-4 md:grid-cols-[2fr_1fr_2fr]"
                         >
@@ -174,33 +186,8 @@ const editModal = ref<InstanceType<typeof EditSessionModal> | null>(null);
                     </TableCell>
                 </TableRow>
 
-                <!-- Add session initiator -->
                 <TableRow v-if="!showAddForm && !workshop.archived">
-                    <TableCell :colSpan="5">
-                        <Button
-                            class="h-9 w-full"
-                            variant="ghost"
-                            size="sm"
-                            @click="toggleAddForm"
-                        >
-                            <Plus />
-                            Új időpont hozzáadása
-                        </Button>
-                    </TableCell>
-                </TableRow>
-            </TableBody>
-
-            <TableBody v-else>
-                <TableRow>
-                    <TableCell
-                        :colSpan="5"
-                        class="text-center text-muted-foreground"
-                    >
-                        Nincsenek még időpontok.
-                    </TableCell>
-                </TableRow>
-                <TableRow v-if="!workshop.archived">
-                    <TableCell :colSpan="5">
+                    <TableCell :colSpan="4">
                         <Button
                             class="h-9 w-full"
                             variant="ghost"

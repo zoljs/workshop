@@ -58,7 +58,6 @@ const props = defineProps<{
 
                 <div
                     class="absolute bottom-16 left-4 right-4 z-10 sm:bottom-20 sm:left-8 sm:right-8 md:bottom-24 md:left-20 md:right-auto md:max-w-4xl"
-                    vv
                 >
                     <motion.div
                         class="overflow-hidden p-2 font-bold text-white"
